@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 ¡Feliz Cumpleaños! 🎂</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .email-container {
+            max-width: 650px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6b9aff 0%, #2464ee 100%);
+            color: white;
+            text-align: center;
+            padding: 50px 30px;
+        }
+
+        .birthday-emoji {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .header h1 {
+            font-family: Arial, sans-serif;
+            font-size: 3.5rem;
+            margin: 0;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .greeting {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .name-highlight {
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+        .message {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #34495e;
+            margin: 30px 0;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .wishes-container {
+            background: #f8f9fa;
+            border: 3px solid #74b9ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+
+        .wishes-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .wishes-list {
+            text-align: left;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .wish-item {
+            font-size: 1.1rem;
+            margin: 10px 0;
+            padding: 10px 0;
+            color: #34495e;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .wish-item:last-child {
+            border-bottom: none;
+        }
+
+        .simple-footer {
+            background: #2d3436;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            .email-container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 40px 20px;
+            }
+
+            .header h1 {
+                font-size: 2.8rem;
+            }
+
+            .content {
+                padding: 40px 25px;
+            }
+
+            .greeting {
+                font-size: 1.5rem;
+            }
+
+            .message {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="header">
+            <span class="birthday-emoji">🎉🎂🎈</span>
+            <h1>¡Feliz Cumpleaños!</h1>
+            <p>Un día especial para una persona especial</p>
+        </div>
+
+        <div class="content">
+            <div class="greeting">
+                ¡Hola <span class="name-highlight">{{nombre}}</span>!
+            </div>
+
+            <div class="message">
+                <p>Desde <strong>APUNJU</strong> queremos celebrar contigo este día tan especial. 🎊</p>
+                <p>Que este nuevo año de vida esté lleno de nuevos logros, momentos inolvidables y toda la felicidad que
+                    mereces.</p>
+            </div>
+
+            <div class="wishes-container">
+                <div class="wishes-title">🌟 Te deseamos:</div>
+                <div class="wishes-list">
+                    <div class="wish-item">✨ Nuevas aventuras y experiencias</div>
+                    <div class="wish-item">💫 Que todos tus sueños se cumplan</div>
+                    <div class="wish-item">🎯 Éxito en todas tus metas</div>
+                    <div class="wish-item">❤️ Momentos llenos de felicidad</div>
+                    <div class="wish-item">🚀 Crecimiento profesional y personal</div>
+                    <div class="wish-item">🌈 Días llenos de alegría y color</div>
+                    
+                </div>
+            </div>
+
+            <p style="font-size: 1.2rem; color: #2c3e50; margin: 30px 0; font-weight: bold;">
+                ¡Esperamos que tengas un día maravilloso rodeado/a de las personas que más quieres! 🥳
+            </p>
+
+        </div>
+
+        <!-- Footer simplificado fuera del content -->
+        <div class="simple-footer">
+            <strong style="color: #74b9ff; font-size: 16px;">APUNJU</strong><br>
+            <p>
+                Asociación de Profesionales Universitarios de Jujuy
+            </p>
+            <p>
+                ¡Que tengas un cumpleaños increíble! 🎉
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

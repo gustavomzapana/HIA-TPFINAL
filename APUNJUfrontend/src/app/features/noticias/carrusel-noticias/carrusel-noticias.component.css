@@ -1,0 +1,60 @@
+/* src/app/features/noticias/carrusel-noticias/carrusel-noticias.component.css */
+
+.noticias-carousel-wrapper {
+  max-width: 800px; /* Ancho máximo para el carrusel */
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
+  border-radius: 8px; /* Bordes redondeados */
+  overflow: hidden; /* Asegura que la sombra y los bordes se vean bien */
+}
+
+/* Estilos para las imágenes del carrusel */
+.carousel-img {
+  height: 450px; /* Altura fija para todas las imágenes */
+  object-fit: cover; /* Recorta la imagen para que cubra el área sin distorsión */
+  filter: brightness(70%); /* Oscurece un poco la imagen para que el texto sea más legible */
+}
+
+/* Estilos para el texto de la leyenda del carrusel */
+.news-caption {
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semitransparente para el texto */
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px; /* Espacio desde la parte inferior */
+}
+
+.news-title {
+  font-size: 1.8rem; /* Tamaño de fuente para el título */
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Sombra para el texto del título */
+}
+
+.news-content {
+  font-size: 1rem;
+  line-height: 1.5;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Sombra para el texto del contenido */
+}
+
+/* Estilo para los indicadores (puntos) */
+.carousel-indicators [data-bs-target] {
+  background-color: #fff; /* Puntos blancos */
+  border: 1px solid #007bff; /* Borde azul para los puntos */
+}
+.carousel-indicators .active {
+  background-color: #007bff; /* Punto activo en azul */
+}
+
+/* Mensajes de carga/error/sin noticias */
+.loading-message, .error-message, .no-news-message {
+  padding: 20px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.error-message {
+  color: #dc3545; /* Rojo para errores */
+  font-weight: bold;
+}

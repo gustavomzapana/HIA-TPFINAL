@@ -1,0 +1,141 @@
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+
+      <!-- Contenedor del formulario con paleta azul-blanco -->
+      <div class="login-box p-4 rounded-4 shadow-sm">
+
+        <!-- Título -->
+        <h2 class="text-center text-primary fw-bold mb-4">
+          <i class="bi bi-box-arrow-in-right me-2"></i> Iniciar Sesión
+        </h2>
+
+        <form>
+
+          <!-- DNI -->
+          <div class="mb-3">
+            <label for="dniInput" class="form-label fw-semibold text-primary">DNI</label>
+            <div class="input-group border rounded">
+              <span class="input-group-text bg-primary text-white border-0">
+                <i class="bi bi-card-text"></i>
+              </span>
+              <input
+                type="text"
+                id="dniInput"
+                class="form-control border-0"
+                placeholder="Ingrese su DNI"
+                required
+                pattern="^\d{8,10}$"
+                title="El DNI debe tener entre 8 y 10 dígitos"
+              />
+            </div>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="mb-3">
+            <label for="passwordInput" class="form-label fw-semibold text-primary">Contraseña</label>
+            <div class="input-group border rounded">
+              <span class="input-group-text bg-primary text-white border-0">
+                <i class="bi bi-lock-fill"></i>
+              </span>
+              <input
+                type="password"
+                id="passwordInput"
+                class="form-control border-0"
+                placeholder="Contraseña"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Botón Iniciar sesión -->
+          <div class="d-grid gap-2 mb-3">
+            <button type="button" class="btn btn-primary fw-semibold" (click)="loginNormal()">
+              <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar Sesión
+            </button>
+          </div>
+
+          <!-- ¿Olvidaste tu contraseña? -->
+          <div class="text-center mb-3">
+            <a href="#" class="text-decoration-none text-primary" data-bs-toggle="modal" data-bs-target="#restaurarModal">
+              <i class="bi bi-question-circle-fill me-1"></i> ¿Olvidaste tu contraseña?
+            </a>
+          </div>
+
+          <hr class="text-primary opacity-50">
+
+
+          <div id="google-login-container" class="d-grid gap-2">
+            <div
+              id="g_id_onload"
+              [attr.data-client_id]="googleClientId" data-context="signin"
+              data-context="signin"
+              data-ux_mode="popup"
+              data-callback="handleCredentialResponse"
+              data-auto_prompt="false">
+            </div>
+
+            <div class="g_id_signin"
+              data-type="standard"
+              data-shape="rectangular"
+              data-theme="outline"
+              data-text="signin_with"
+              data-size="large"
+              data-logo_alignment="left">
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="restaurarModal" tabindex="-1" aria-labelledby="restaurarModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg rounded-3">
+      
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="restaurarModalLabel">
+          <i class="bi bi-shield-lock-fill me-2"></i> Recuperar Contraseña
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-3 text-center">
+          <i class="bi bi-person-badge-fill display-5 text-secondary"></i>
+          <p class="mt-2">Ingresá tu DNI para restablecer tu contraseña. Te enviaremos los datos a tu correo registrado.</p>
+        </div>
+
+        <div class="mb-3">
+          <label for="dniRecuperar" class="form-label fw-bold">DNI</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+            <input
+              type="text"
+              class="form-control"
+              id="dniRecuperar"
+              [(ngModel)]="dniRecuperacion"
+              placeholder="Ej: 12345678"
+              required
+              pattern="^\d{8,10}$"
+              title="El DNI debe tener entre 8 y 10 dígitos"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="restaurarContrasena()">
+          <i class="bi bi-arrow-repeat"></i> Restaurar
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</div>

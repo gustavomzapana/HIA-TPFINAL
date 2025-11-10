@@ -1,0 +1,199 @@
+/* Estilos generales de la tarjeta */
+.profile-card {
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+  
+  /* Encabezado de la tarjeta */
+  .card-header {
+    background: linear-gradient(135deg, var(--primary-blue), #0056b3);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-bottom: none;
+  }
+  
+  .card-header h3 {
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  
+  .card-header p {
+    opacity: 0.9;
+    margin: 0.25rem 0 0;
+    font-size: 0.95rem;
+  }
+  
+  /* Imagen de perfil */
+  .profile-img-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .profile-img:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Nombre y rol */
+  .profile-name {
+    color: #2c3e50;
+    font-weight: 600;
+    margin: 1rem 0 0.5rem;
+  }
+  
+  /* Tarjetas de información */
+  .info-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+  }
+  
+  .info-card:hover {
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-color: #dee2e6;
+  }
+  
+  .info-icon {
+    font-size: 1.25rem;
+    color: var(--primary-blue);
+    background: rgba(13, 110, 253, 0.1);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+  }
+  
+  .info-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+  }
+  
+  .info-value {
+    font-weight: 500;
+    color: #2c3e50;
+    word-break: break-word;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .card-header {
+      text-align: center;
+      padding: 1.25rem 1rem;
+    }
+    
+    .profile-img {
+      width: 120px;
+      height: 120px;
+    }
+    
+    .info-card {
+      padding: 0.75rem;
+    }
+  }
+
+  /* Estilos para el panel de gestión */
+.nav-tabs {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+  color: var(--text-white);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: 0;
+  position: relative;
+  margin-right: 5px;
+}
+
+.nav-tabs .nav-link:hover {
+  border: none;
+  color: var(--primary-blue);
+  background-color: var(--bg-light);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--primary-blue);
+  border: none;
+}
+
+.nav-tabs .nav-link i {
+  margin-right: 5px;
+}
+
+/* Formularios */
+.form-label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ced4da;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+
+/* Switch personalizado */
+.form-switch .form-check-input {
+  width: 2.5em;
+  margin-left: -2.5em;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba%280, 0, 0, 0.25%29'/%3e%3c/svg%3e");
+}
+
+.form-switch .form-check-input:checked {
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-tabs .nav-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}

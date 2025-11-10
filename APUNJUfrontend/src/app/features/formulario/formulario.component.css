@@ -1,0 +1,24 @@
+.form-vertical-card {
+  width: 100%;
+  max-width: 800px;
+  min-height: 65vh;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-centered-container {
+  background: #f8f9fa;
+  padding: 2rem 1rem;
+}
+
+.card-header {
+  background-color: #003366 !important;
+  border-radius: 10px 10px 0 0;
+}
+
+.btn-primary {
+  background-color: #003366;
+  border-color: #003366;
+}

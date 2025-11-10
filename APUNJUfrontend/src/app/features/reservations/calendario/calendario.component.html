@@ -1,0 +1,69 @@
+<!-- calendar-reservations.component.html -->
+<mat-card>
+
+    <mat-card-content>
+      <!-- Navigation controls -->
+      <div class="calendar-controls">
+        <button mat-icon-button (click)="mesAnterior()" [disabled]="cargando || mesActualIndex === 0">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        
+        <h2>{{ formatearMes(meses[mesActualIndex]) | titlecase }}</h2>
+        
+        <button mat-icon-button (click)="mesSiguiente()" [disabled]="cargando || mesActualIndex === meses.length - 1">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+  
+      <!-- Loading indicator -->
+      <div *ngIf="cargando" class="loading">
+        <mat-spinner diameter="32"></mat-spinner>
+        <span>Loading availability...</span>
+      </div>
+  
+      <!-- Error message -->
+      <div *ngIf="error" class="error">
+        <mat-icon color="warn">error_outline</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+  
+      <!-- Weekdays -->
+      <div class="weekdays">
+        <div *ngFor="let dia of diasSemana" class="weekday">{{ dia }}</div>
+      </div>
+  
+      <!-- Month days -->
+      <div class="month-days">
+        <div *ngFor="let dia of diasPorMes[mesActualIndex]" 
+             class="day"
+             [class.today]="dia.esHoy"
+             [class.available]="dia.disponible === true"
+             [class.unavailable]="dia.disponible === false"
+             [class.selected]="dia.seleccionado"
+             (click)="seleccionarDia(dia)">
+          @if(dia.esMesActual) {
+            {{ dia.fecha.getDate() }}
+          }
+          <div class="status" *ngIf="dia.disponible !== undefined">
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="reservation-rule text-center justify-content-center align-items-center" style="display: flex; margin: 16px 0;">
+    <mat-icon [color]="fechasParaReservar.length > 0 ? 'primary' : 'warn'" style="margin-right: 8px;">
+      {{ fechasParaReservar.length > 0 ? 'check_circle' : 'cancel' }}
+    </mat-icon>
+    <span>
+      Se debe seleccionar al menos una fecha para reservar
+    </span>
+  </div>
+
+  <div class="text-center align-items-center justify-content-center">
+  <button class="btn-primary-created w-50 py-2 fw-bold btn-confirm"
+          [disabled]="fechasParaReservar.length === 0"
+          (click)="onSiguiente()">
+    Siguiente
+  </button>
+  </div>

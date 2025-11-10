@@ -1,0 +1,39 @@
+.noticias-page-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.noticia-card {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
+}
+
+.noticia-card:hover {
+  transform: scale(1.01);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card-img-top {
+  max-height: 300px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.card-text {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.btn-sm {
+  padding: 5px 12px;
+}
+
+.text-muted {
+  font-size: 0.8rem;
+}

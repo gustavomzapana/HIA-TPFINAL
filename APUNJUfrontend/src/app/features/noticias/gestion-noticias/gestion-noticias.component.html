@@ -1,0 +1,141 @@
+<div class="container-fluid mt-4">
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-newspaper me-2"></i>Gestión de Noticias</h2>
+            <p class="text-muted">
+                Noticias del sistema | Usuario: <strong>{{ getUsuarioActual().nombre || 'Administrador' }}
+                </strong>
+                <span class="badge bg-success ms-2">Admin</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Filtro y botón de creación -->
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" placeholder="Buscar por título o mensaje..."
+                    [(ngModel)]="filtro">
+            </div>
+        </div>
+        <div class="col-md-4 text-end d-flex justify-content-end gap-2">
+            <button class="btn btn-outline-primary" (click)="sincronizarNoticiasFacebook()">
+                <i class="bi bi-cloud-arrow-down me-1"></i>Sincronizar Facebook
+            </button>
+            <button class="btn btn-primary" (click)="abrirModal()">
+                <i class="bi bi-plus-circle me-2"></i>Crear Noticia
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabla de noticias -->
+    <div class="card shadow-sm">
+        <div class="card-body table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Título</th>
+                        <th>Mensaje</th>
+                        <th>Enlace</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let noticia of noticiasFiltradas">
+                        <td>
+                            <img [src]="noticia.imagenUrl || 'assets/images/default-news.jpg'" alt="img"
+                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">
+                        </td>
+                        <td>{{ noticia.titulo }}</td>
+                        <td>{{ noticia.message | slice:0:60 }}<span *ngIf="noticia.message.length > 60">...</span></td>
+                        <td>
+                            <a *ngIf="noticia.link" [href]="noticia.link" target="_blank"
+                                class="text-decoration-underline text-primary">
+                                Ver en Facebook
+                            </a>
+                            <span *ngIf="!noticia.link" class="text-muted">—</span>
+                        </td>
+                        <td>{{ noticia.createdAt | date: 'dd/MM/yyyy' }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" (click)="abrirModal(noticia)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" (click)="eliminarNoticia(noticia)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="noticiasFiltradas.length === 0">
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox me-2"></i>No se encontraron noticias
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar noticia -->
+    <div class="modal fade" tabindex="-1" [class.show]="mostrarModal" [style.display]="mostrarModal ? 'block' : 'none'">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square me-2"></i>{{ noticiaSeleccionada ? 'Editar Noticia' : 'Nueva
+                        Noticia' }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form (ngSubmit)="guardarNoticia()" #noticiaForm="ngForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Título *</label>
+                            <input type="text" class="form-control" [(ngModel)]="formulario.titulo" name="titulo"
+                                required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mensaje *</label>
+                            <textarea class="form-control" rows="4" [(ngModel)]="formulario.message" name="message"
+                                required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Enlace (opcional)</label>
+                            <input type="url" class="form-control" [(ngModel)]="formulario.link" name="link"
+                                placeholder="https://www.facebook.com/...">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Imagen (URL o archivo)</label>
+                            <input type="file" class="form-control" name="imagen" (change)="onFileSelected($event)"
+                                accept="image/*">
+                            <img *ngIf="imagenPreview" [src]="imagenPreview" alt="Preview" class="img-thumbnail mt-2"
+                                style="max-height: 200px;">
+                        </div>
+
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-success" [disabled]="isSaving">
+                                <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+                                <i *ngIf="!isSaving" class="bi bi-save me-1"></i>
+                                {{ noticiaSeleccionada ? 'Actualizar' : 'Publicar' }}
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary ms-2"
+                                (click)="cerrarModal()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay del modal -->
+    <div class="modal-backdrop fade show" *ngIf="mostrarModal" (click)="cerrarModal()"></div>
+</div>

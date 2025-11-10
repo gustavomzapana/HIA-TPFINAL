@@ -1,0 +1,5 @@
+[client]
+user=exporter
+password=exporter_password
+host=galera1
+port=3306

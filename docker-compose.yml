@@ -1,0 +1,212 @@
+services:
+  # nodo uno, sera el bootstrap del cluster
+  galera1:
+    image: mariadb:10.5
+    container_name: galera1
+    volumes:
+      - ./Docker/mysql/master-conf/my.cnf:/etc/mysql/my.cnf:ro
+      - galera1-data:/var/lib/mysql
+      - ./Docker/configs/init-users.sql:/docker-entrypoint-initdb.d/init-users.sql
+    environment:
+      - WSREP_CLUSTER_ADDRESS=gcomm://
+      #- WSREP_CLUSTER_ADDRESS=gcomm://galera1,galera2,galera3
+      - MARIADB_ROOT_PASSWORD=root
+    ports:
+      - "3310:3306"
+    networks:
+      - redCluster
+    healthcheck:
+      test: ["CMD", "bash", "-c", "mysqladmin ping -h localhost -uroot -proot && mysql -uroot -proot -e \"SHOW STATUS LIKE 'wsrep_ready'\" | grep -q ON"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+
+  # nodo dos
+  galera2:
+    image: mariadb:10.5
+    container_name: galera2
+    volumes:
+      - ./Docker/mysql/slave-conf/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - galera2-data:/var/lib/mysql
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+    ports:
+      - "3311:3306"
+    networks:
+      - redCluster
+    depends_on:
+      galera1:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "bash", "-c", "mysqladmin ping -h localhost -uroot -proot && mysql -uroot -proot -e \"SHOW STATUS LIKE 'wsrep_ready'\" | grep -q ON"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+
+  # nodo tres
+  galera3:
+    image: mariadb:10.5
+    container_name: galera3
+    volumes:
+      - ./Docker/mysql/slave2-conf/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      - galera3-data:/var/lib/mysql
+    environment:
+      - MARIADB_ROOT_PASSWORD=root
+    ports:
+      - "3312:3306"
+    networks:
+      - redCluster
+    depends_on:
+      galera1:
+        condition: service_healthy
+      galera2:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "bash", "-c", "mysqladmin ping -h localhost -uroot -proot && mysql -uroot -proot -e \"SHOW STATUS LIKE 'wsrep_ready'\" | grep -q ON"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: always
+    ports:
+      - 8080:8080   # Adminer disponible en http://localhost:8080
+    depends_on:
+      - haproxy
+    networks:
+      - redCluster
+
+
+  haproxy:
+    image: haproxy:2.9
+    container_name: haproxy
+    restart: unless-stopped
+    volumes:
+      - ./Docker/configs/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "3307:3306"
+    networks:
+      - redCluster
+    depends_on:
+      galera1:
+        condition: service_healthy
+      galera2:
+        condition: service_healthy
+      galera3:
+        condition: service_healthy
+
+  # servicio backend para la aplicación APUNJU
+  backend:
+    build: ./APUNJUbackend
+    container_name: backend
+    # En producción/ejecución por compose usamos el .env específico para Docker
+    env_file:
+      - ./APUNJUbackend/.env.docker
+    ports:
+      - "8000:8000"
+    networks:
+      - redCluster
+    depends_on:
+      - haproxy
+    restart: always
+
+  # Frontend Angular
+  frontend:
+    build: 
+      context: ./APUNJUfrontend/
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "80:80"  # Puerto estándar HTTP
+    environment:
+      - API_URL=http://localhost:8000
+    networks:
+      - redCluster
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    networks:
+      - redCluster
+    volumes:
+      - ./Docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    # Se agrega dependencia a los nuevos exporters
+    depends_on:
+      - mysqld_exporter_galera1
+      - mysqld_exporter_galera2
+      - mysqld_exporter_galera3
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    networks:
+      - redCluster
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+  # --- NUEVOS SERVICIOS AÑADIDOS ---
+  mysqld_exporter_galera1:
+    image: prom/mysqld-exporter
+    container_name: mysqld_exporter_galera1
+    command:
+      - "--config.my-cnf=/etc/mysql/exporter.cnf"
+    volumes:
+      - ./Docker/configs/exporter1.cnf:/etc/mysql/exporter.cnf:ro
+    networks:
+      - redCluster
+    depends_on:
+      - galera1
+
+  mysqld_exporter_galera2:
+    image: prom/mysqld-exporter
+    container_name: mysqld_exporter_galera2
+    command:
+      - "--config.my-cnf=/etc/mysql/exporter.cnf"
+    volumes:
+      - ./Docker/configs/exporter2.cnf:/etc/mysql/exporter.cnf:ro
+    networks:
+      - redCluster
+    depends_on:
+      - galera2
+
+  mysqld_exporter_galera3:
+    image: prom/mysqld-exporter
+    container_name: mysqld_exporter_galera3
+    command:
+      - "--config.my-cnf=/etc/mysql/exporter.cnf"
+    volumes:
+      - ./Docker/configs/exporter3.cnf:/etc/mysql/exporter.cnf:ro
+    networks:
+      - redCluster
+    depends_on:
+      - galera3
+  # --- FIN DE NUEVOS SERVICIOS ---
+
+volumes:
+  galera1-data:
+  galera2-data:
+  galera3-data:
+  grafana-data:
+
+networks:
+  redCluster:
+    external: true

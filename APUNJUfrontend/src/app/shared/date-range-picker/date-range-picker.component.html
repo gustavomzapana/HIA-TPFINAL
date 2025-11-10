@@ -1,0 +1,43 @@
+<div class="date-range-container" [formGroup]="range">
+  <mat-form-field>
+    <mat-label>Fecha de inicio</mat-label>
+    <input matInput 
+           [matDatepicker]="startPicker"
+           formControlName="start"
+           [min]="minDate"
+           (dateChange)="validateDateRange()">
+    <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+    <mat-datepicker #startPicker></mat-datepicker>
+    
+    @if (range.get('start')?.hasError('matDatepickerMin')) {
+      <mat-error>La fecha no puede ser anterior a hoy</mat-error>
+    }
+    @if (range.get('start')?.hasError('required')) {
+      <mat-error>La fecha de inicio es requerida</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Fecha de fin</mat-label>
+    <input matInput 
+           [matDatepicker]="endPicker"
+           formControlName="end"
+           [min]="minDate"
+           (dateChange)="validateDateRange()">
+    <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+    <mat-datepicker #endPicker></mat-datepicker>
+    
+    @if (range.get('end')?.hasError('matDatepickerMin')) {
+      <mat-error>La fecha no puede ser anterior a hoy</mat-error>
+    }
+    @if (range.get('end')?.hasError('required')) {
+      <mat-error>La fecha de fin es requerida</mat-error>
+    }
+    @if (range.get('end')?.hasError('invalidDateRange')) {
+      <mat-error>La fecha de fin no puede ser anterior a la de inicio</mat-error>
+    }
+  </mat-form-field>
+</div>
+  
+  <!-- Si hay problemas, descomenta esta linea para debugear
+  <p>Selected range: {{range.value | json}}</p>-->

@@ -1,0 +1,657 @@
+<div class="body-container" style="min-height: 100dvh;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Header -->
+                <div class="text-center mb-5">
+                    <h1 class="display-5 fw-bold text-primary mb-3">
+                        <i class="bi bi-person-check me-3"></i>Mis Actividades
+                    </h1>
+                    <p class="lead text-muted">Gestiona tus reservas e inscripciones</p>
+                </div>
+
+                <!-- Navegación por pestañas -->
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header bg-primary bg-opacity-10 border-0">
+                        <ul class="nav nav-pills nav-fill" id="actividadesTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold" id="reservas-tab" data-bs-toggle="pill"
+                                    data-bs-target="#reservas" type="button" role="tab">
+                                    <i class="bi bi-calendar-check me-2"></i>Mis Reservas
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold" id="capacitaciones-tab" data-bs-toggle="pill"
+                                    data-bs-target="#capacitaciones" type="button" role="tab">
+                                    <i class="bi bi-mortarboard me-2"></i>Capacitaciones
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold" id="cursos-tab" data-bs-toggle="pill"
+                                    data-bs-target="#cursos" type="button" role="tab">
+                                    <i class="bi bi-book me-2"></i>Cursos
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold" id="talleres-tab" data-bs-toggle="pill"
+                                    data-bs-target="#talleres" type="button" role="tab">
+                                    <i class="bi bi-tools me-2"></i>Talleres
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <div class="tab-content" id="actividadesTabContent">
+
+                            <!-- ========== MIS RESERVAS ========== -->
+                            <div class="tab-pane fade show active" id="reservas" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h4 class="fw-bold text-primary mb-0">
+                                        <i class="bi bi-calendar-check me-2"></i>Mis Reservas
+                                    </h4>
+                                    <span class="badge bg-primary fs-6">{{ totalReservas }} reservas</span>
+                                </div>
+
+                                <!-- Cargando reservas -->
+                                <div *ngIf="cargandoReservas" class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Cargando tus reservas...</p>
+                                </div>
+
+                                <!-- Lista de reservas -->
+                                <div *ngIf="!cargandoReservas && reservas.length > 0" class="row g-4">
+                                    <div class="col-md-6 col-lg-4" *ngFor="let reserva of reservas">
+                                        <div class="card h-100 border-0 shadow-sm hover-shadow">
+                                            <div class="card-header bg-primary bg-opacity-10 border-0">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h6 class="fw-bold mb-0">{{ reserva.resourceId?.nombre }}</h6>
+                                                    <span class="badge" [ngClass]="{
+                                                        'bg-success': reserva.estado === 'confirmada',
+                                                        'bg-warning': reserva.estado === 'pendiente',
+                                                        'bg-secondary': reserva.estado === 'finalizada',
+                                                        'bg-danger': reserva.estado === 'cancelada'
+                                                        }">{{ reserva.estado }}</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <i class="bi bi-calendar3 text-primary me-2"></i>
+                                                    <div *ngFor="let item of reserva.fechas">
+                                                        <span class="fw-medium">{{ item.fecha | date:'dd/MM/yyyy'
+                                                            }} </span>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <i class="bi bi-credit-card text-success me-2"></i>
+                                                    <span>{{ reserva.metodoDePago }}</span>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <i class="bi bi-currency-dollar text-warning me-2"></i>
+                                                    <span class="fw-bold">Importe Total{{ reserva.pagoId?.importeTotal |
+                                                        currency:'ARS' }}</span>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <span class="badge" [ngClass]="{
+              'bg-success': reserva.estado,
+              'bg-warning': !reserva.estado
+            }">
+                                                        <i class="bi me-1" [ngClass]="{
+                'bi-check-circle': reserva.estado,
+                'bi-exclamation-triangle': !reserva.estado
+              }"></i>
+                                                        {{ reserva.estado ? 'Pagado' : 'Pendiente' }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-0">
+                                                <button class="btn btn-outline-primary btn-sm w-100"
+                                                    (click)="verDetallesReserva(reserva)">
+                                                    <i class="bi bi-eye me-1"></i>Ver detalles
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Mensaje cuando no hay reservas -->
+                                <div *ngIf="!cargandoReservas && reservas.length === 0" class="text-center py-5">
+                                    <i class="bi bi-calendar-x display-1 text-muted mb-3"></i>
+                                    <h5 class="text-muted">No tienes reservas registradas</h5>
+                                    <p class="text-muted mb-4">¡Reserva espacios para tus actividades!</p>
+                                    <button class="btn btn-primary" routerLink="/reservas">
+                                        <i class="bi bi-plus-circle me-2"></i>Hacer una reserva
+                                    </button>
+                                </div>
+                            </div>
+
+
+
+
+
+                            <!-- ========== CAPACITACIONES ========== -->
+                            <div class="tab-pane fade" id="capacitaciones" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h4 class="fw-bold text-primary mb-0">
+                                        <i class="bi bi-mortarboard me-2"></i>Mis Capacitaciones
+                                    </h4>
+                                    <span class="badge bg-primary fs-6">{{ totalCapacitaciones }}
+                                        inscripciones</span>
+                                </div>
+
+                                <div *ngIf="cargandoCapacitaciones" class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-2 text-muted">Cargando capacitaciones...</p>
+                                </div>
+
+                                <div *ngIf="!cargandoCapacitaciones && capacitaciones.length > 0" class="row g-4">
+                                    <div class="col-md-6 col-lg-4" *ngFor="let capacitacion of capacitaciones">
+                                        <div class="card h-100 border-0 shadow-sm hover-shadow">
+                                            <div class="card-header bg-primary bg-opacity-10 border-0">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h6 class="fw-bold mb-0">{{
+                                                        capacitacion.actividadId?.nombreCurso }}
+                                                    </h6>
+                                                    <span class="badge" [ngClass]="{
+                                                            'bg-success': capacitacion.estado === 'confirmada',
+                                                            'bg-warning': capacitacion.estado === 'pendiente',
+                                                            'bg-danger': capacitacion.estado === 'cancelada'
+                                                        }">{{ capacitacion.estado }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-2">
+                                                    <i class="bi bi-calendar3 text-primary me-2"></i>
+                                                    <span>{{ capacitacion.actividadId?.fechaInicio |
+                                                        date:'dd/MM/yyyy'
+                                                        }}</span>
+                                                </div>
+
+                                                <div class="mb-2">
+                                                    <i class="bi bi-calendar-check text-success me-2"></i>
+                                                    <span>Inscrito el: {{ capacitacion.fechaInscripcion |
+                                                        date:'dd/MM/yyyy' }}</span>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <span class="badge bg-info">{{
+                                                        capacitacion.actividadId?.modalidad
+                                                        }}</span>
+                                                </div>
+                                                <p class="text-muted small">{{ capacitacion.actividadId?.descripcion
+                                                    }}
+                                                </p>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-0">
+                                                <button class="btn btn-outline-primary btn-sm w-100"
+                                                    (click)="verDetalles(capacitacion)">
+                                                    <i class="bi bi-eye me-1"></i>Ver detalles
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="!cargandoCapacitaciones && capacitaciones.length === 0"
+                                    class="text-center py-5">
+                                    <i class="bi bi-mortarboard display-1 text-muted mb-3"></i>
+                                    <h5 class="text-muted">No tienes capacitaciones registradas</h5>
+                                    <p class="text-muted mb-4">¡Inscríbete en nuestras capacitaciones!</p>
+                                    <button class="btn btn-primary" routerLink="/actividades/capacitaciones">
+                                        <i class="bi bi-plus-circle me-2"></i>Ver capacitaciones
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- ========== CURSOS ========== -->
+                            <div class="tab-pane fade" id="cursos" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h4 class="fw-bold text-primary mb-0">
+                                        <i class="bi bi-book me-2"></i>Mis Cursos
+                                    </h4>
+                                    <span class="badge bg-primary fs-6">{{ totalCursos }} inscripciones</span>
+                                </div>
+
+                                <div *ngIf="cargandoCursos" class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-2 text-muted">Cargando cursos...</p>
+                                </div>
+
+                                <div *ngIf="!cargandoCursos && cursos.length > 0" class="row g-4">
+                                    <div class="col-md-6 col-lg-4" *ngFor="let curso of cursos">
+                                        <div class="card h-100 border-0 shadow-sm hover-shadow">
+                                            <div class="card-header bg-primary bg-opacity-10 border-0">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h6 class="fw-bold mb-0">{{ curso.actividadId?.nombreCurso }}
+                                                    </h6>
+                                                    <span class="badge" [ngClass]="{
+                                                            'bg-success': curso.estado === 'confirmada',
+                                                            'bg-warning': curso.estado === 'pendiente',
+                                                            'bg-danger': curso.estado === 'cancelada'
+                                                        }">{{ curso.estado }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-2">
+                                                    <i class="bi bi-calendar3 text-primary me-2"></i>
+                                                    <span>{{ curso.actividadId?.fechaInicio | date:'dd/MM/yyyy'
+                                                        }}</span>
+                                                </div>
+
+                                                <div class="mb-2">
+                                                    <i class="bi bi-calendar-check text-primary me-2"></i>
+                                                    <span>Inscrito el: {{ curso.fechaInscripcion | date:'dd/MM/yyyy'
+                                                        }}</span>
+                                                </div>
+                                                <div class="mb-2" *ngIf="curso.montoPagado > 0">
+                                                    <i class="bi bi-currency-dollar text-warning me-2"></i>
+                                                    <span>Pagado: {{ curso.montoPagado | currency:'ARS' }}</span>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <span class="badge bg-success">{{ curso.nivel }}</span>
+                                                    <span class="badge bg-info ms-1" *ngIf="curso.estadoPago">{{
+                                                        curso.estadoPago }}</span>
+                                                </div>
+                                                <p class="text-muted small">{{ curso.actividadId?.descripcion }}</p>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-0">
+                                                <button class="btn btn-outline-primary btn-sm w-100"
+                                                    (click)="verDetalles(curso)">
+                                                    <i class="bi bi-eye me-1"></i>Ver detalles
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="!cargandoCursos && cursos.length === 0" class="text-center py-5">
+                                    <i class="bi bi-book display-1 text-muted mb-3"></i>
+                                    <h5 class="text-muted">No tienes cursos registrados</h5>
+                                    <p class="text-muted mb-4">¡Inscríbete en nuestros cursos!</p>
+                                    <button class="btn btn-success" routerLink="/actividades/cursos">
+                                        <i class="bi bi-plus-circle me-2"></i>Ver cursos
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- ========== TALLERES ========== -->
+                            <div class="tab-pane fade" id="talleres" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h4 class="fw-bold text-primary mb-0">
+                                        <i class="bi bi-tools me-2"></i>Mis Talleres
+                                    </h4>
+                                    <span class="badge bg-primary fs-6">{{ totalTalleres }} inscripciones</span>
+                                </div>
+
+                                <div *ngIf="cargandoTalleres" class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-2 text-muted">Cargando talleres...</p>
+                                </div>
+
+                                <div *ngIf="!cargandoTalleres && talleres.length > 0" class="row g-4">
+                                    <div class="col-md-6 col-lg-4" *ngFor="let taller of talleres">
+                                        <div class="card h-100 border-0 shadow-sm hover-shadow">
+                                            <div class="card-header bg-primary bg-opacity-10 border-0">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h6 class="fw-bold mb-0">{{ taller.actividadId?.nombreCurso }}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-2">
+                                                    <i class="bi bi-calendar3 text-primary me-2"></i>
+                                                    <span>Fecha de Inicio: {{ taller.actividadId?.fechaInicio |
+                                                        date:'dd/MM/yyyy'
+                                                        }}</span>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <i class="bi bi-calendar-check text-success me-2"></i>
+                                                    <span>Inscrito el: {{ taller.fechaInscripcion |
+                                                        date:'dd/MM/yyyy'
+                                                        }}</span>
+                                                </div>
+                                                <p class="text-muted small">{{ taller.actividadId?.descripcion }}
+                                                </p>
+                                            </div>
+                                            <div class="card-footer bg-transparent border-0">
+                                                <button class="btn btn-outline-primary btn-sm w-100"
+                                                    (click)="verDetalles(taller)">
+                                                    <i class="bi bi-eye me-1"></i>Ver detalles
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="!cargandoTalleres && talleres.length === 0" class="text-center py-5">
+                                    <i class="bi bi-tools display-1 text-muted mb-3"></i>
+                                    <h5 class="text-muted">No tienes talleres registrados</h5>
+                                    <p class="text-muted mb-4">¡Inscríbete en nuestros talleres!</p>
+                                    <button class="btn btn-warning" routerLink="/actividades/talleres">
+                                        <i class="bi bi-plus-circle me-2"></i>Ver talleres
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos adicionales -->
+<style>
+    .hover-shadow {
+        transition: all 0.3s ease;
+    }
+
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .nav-pills .nav-link {
+        border-radius: 25px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-pills .nav-link:not(.active):hover {
+        background-color: var(--bs-primary-bg-subtle);
+        color: var(--bs-primary);
+    }
+</style>
+
+<!-- NUEVO: MODAL DE DETALLES -->
+<!-- Modal de detalles -->
+<div class="modal fade" [class.show]="mostrarModalDetalles" [style.display]="mostrarModalDetalles ? 'block' : 'none'"
+    tabindex="-1" role="dialog" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: var(--primary-blue); color: white;">
+                <h5 class="modal-title">
+                    <i class="bi bi-mortarboard me-2"></i>
+                    Detalles de la Actividad
+                </h5>
+                <button type="button" class="btn-close btn-close-white" (click)="cerrarModalDetalles()"></button>
+            </div>
+
+            <div class="modal-body" *ngIf="actividadDetalles">
+                <!-- Header con imagen y título -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img [src]="actividadDetalles.actividadId?.imagen || 'https://via.placeholder.com/400x300/e9ecef/6c757d?text=Sin+Imagen'"
+                                [alt]="actividadDetalles.actividadId?.nombreCurso" class="card-img-top"
+                                style="height: 200px; object-fit: cover;" loading="lazy">
+                            <div class="card-body text-center">
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-mortarboard me-1"></i>{{ actividadDetalles.tipoActividad }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <h3 style="color: var(--primary-blue)">{{ actividadDetalles.actividadId?.nombreCurso }}
+                            </h3>
+                            <p class="text-muted">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                Creado el {{ actividadDetalles.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                            </p>
+                        </div>
+
+                        <!-- Estado de inscripción -->
+                        <div class="mb-3">
+                            <h6 class="fw-bold">Estado de inscripción:</h6>
+                            <span class="badge" [ngClass]="{
+                                'bg-success': actividadDetalles.estado === 'confirmada',
+                                'bg-warning': actividadDetalles.estado === 'pendiente',
+                                'bg-danger': actividadDetalles.estado === 'cancelada' 
+                                }">{{ actividadDetalles.estado }}
+                            </span>
+                        </div>
+
+                        <!-- Estado del pago -->
+                        <div class="mb-3" *ngIf="actividadDetalles.estadoPago">
+                            <h6 class="fw-bold">Estado del pago:</h6>
+                            <span class="badge" [ngClass]="{
+                'bg-success': actividadDetalles.estadoPago === 'pagado',
+                'bg-warning': actividadDetalles.estadoPago === 'pendiente' }">{{ actividadDetalles.estadoPago }}</span>
+                        </div>
+
+                        <!-- Fecha de inscripción -->
+                        <div class="mb-3">
+                            <h6 class="fw-bold">Fecha de inscripción:</h6>
+                            <p>{{ actividadDetalles.fechaInscripcion | date:'dd/MM/yyyy HH:mm' }}</p>
+                        </div>
+
+                        <!-- Precio dependiendo del tipo de usuario -->
+                        <div class="mb-3">
+                            <h6 class="fw-bold">Precio:</h6>
+                            <p *ngIf="actividadDetalles.esAfiliado" class="text-success fw-bold">
+                                <i class="bi bi-gift me-1"></i> Gratuito (Afiliado)
+                            </p>
+                            <p *ngIf="!actividadDetalles.esAfiliado" class="text-danger fw-bold">
+                                <i class="bi bi-currency-dollar me-1"></i> {{ actividadDetalles.precioNoAfiliado |
+                                currency:'ARS' }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información principal -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-file-text me-2"></i>
+                                    Descripción
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0">{{ actividadDetalles.actividadId?.descripcion }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4" *ngIf="actividadDetalles.actividadId?.tipoActividad==='Taller'">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-file-text me-2"></i>
+                                    Materiales
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <ul *ngFor="let mate of actividadDetalles.actividadId?.materiales ">
+                                    <li class="text-muted ">{{ mate }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- Mensaje cuando no hay datos -->
+            <div class="modal-body text-center py-5" *ngIf="!actividadDetalles">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>No hay información disponible</strong>
+                    <p class="mb-0 mt-2">No se pudieron cargar los detalles de la actividad.</p>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalDetalles()">
+                    <i class="bi bi-x-circle me-1"></i>
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" [class.show]="mostrarModalDetalles" [style.display]="mostrarModalDetalles ? 'block' : 'none'"
+    tabindex="-1" role="dialog" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: var(--primary-blue); color: white;">
+                <h5 class="modal-title">
+                    <i class="bi bi-mortarboard me-2"></i>
+                    Detalles de la Actividad
+                </h5>
+                <button type="button" class="btn-close btn-close-white" (click)="cerrarModalDetalles()"></button>
+            </div>
+
+            <div class="modal-body" *ngIf="actividadDetalles">
+                <div *ngIf="!cargandoReservas && reservas.length > 0 && cargandoRecursos" class="row g-4">
+                    <div class="col-md-6 col-lg-4" *ngFor="let reserva of reservas">
+                        <div class="card h-100 border-0 shadow-sm hover-shadow">
+                            <div class="card-header bg-primary bg-opacity-10 border-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="fw-bold mb-0">{{ reserva.recurso }}</h6>
+                                    <span class="badge" [ngClass]="{
+                                                        'bg-success': reserva.estado === 'confirmada',
+                                                        'bg-warning': reserva.estado === 'pendiente',
+                                                        'bg-secondary': reserva.estado === 'finalizada',
+                                                        'bg-danger': reserva.estado === 'cancelada'
+                                                    }">{{ reserva.estado }}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <i class="bi bi-calendar3 text-primary me-2"></i>
+                                    <span class="fw-medium">{{ reserva.fecha | date:'dd/MM/yyyy' }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <i class="bi bi-credit-card text-success me-2"></i>
+                                    <span>{{ reserva.metodoPago }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <i class="bi bi-currency-dollar text-warning me-2"></i>
+                                    <span class="fw-bold">{{ reserva.importe | currency:'ARS' }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <span class="badge" [ngClass]="{
+                                                        'bg-success': reserva.pagado,
+                                                        'bg-warning': !reserva.pagado
+                                                    }">
+                                        <i class="bi me-1" [ngClass]="{
+                                                            'bi-check-circle': reserva.pagado,
+                                                            'bi-exclamation-triangle': !reserva.pagado
+                                                        }"></i>
+                                        {{ reserva.pagado ? 'Pagado' : 'Pendiente' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-0">
+                                <button class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="bi bi-eye me-1"></i>Ver detalles
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- Mensaje cuando no hay datos -->
+            <div class="modal-body text-center py-5" *ngIf="!cargandoReservas && reservas.length === 0">
+                <div class="alert alert-warning">
+                    <i class="bi bi-calendar-x display-1 text-muted mb-3"></i>
+                    <h5 class="text-muted">No tienes reservas registradas</h5>
+                    <p class="text-muted mb-4">¡Reserva espacios para tus actividades!</p>
+                    <button class="btn btn-primary" routerLink="/reservas">
+                        <i class="bi bi-plus-circle me-2"></i>Hacer una reserva
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalDetalles()">
+                    <i class="bi bi-x-circle me-1"></i>
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de detalles de reserva -->
+<div class="modal fade" [class.show]="mostrarModalDetallesReserva"
+    [style.display]="mostrarModalDetallesReserva ? 'block' : 'none'" tabindex="-1" role="dialog"
+    aria-labelledby="modalDetallesReservaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDetallesReservaLabel">
+                    <i class="bi bi-calendar-check me-2"></i>Detalles de la Reserva
+                </h5>
+                <button type="button" class="btn-close" (click)="cerrarModalDetallesReserva()"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body" *ngIf="reservaDetalles">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Recurso:</h6>
+                        <p>{{ reservaDetalles.resourceId?.nombre }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Fecha:</h6>
+                        <div *ngFor="let item of reservaDetalles.fechas">
+                            <span class="fw-medium">{{ item.fecha | date:'dd/MM/yyyy' }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Método de Pago:</h6>
+                        <p>{{ reservaDetalles.metodoDePago }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Importe Total:</h6>
+                        <p>{{ reservaDetalles.pagoId?.importeTotal | currency:'ARS' }}</p>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Estado:</h6>
+                        <span class="badge" [ngClass]="{
+              'bg-success': reservaDetalles.estado === 'confirmada',
+              'bg-warning': reservaDetalles.estado === 'pendiente',
+              'bg-secondary': reservaDetalles.estado === 'finalizada',
+              'bg-danger': reservaDetalles.estado === 'cancelada'
+            }">{{ reservaDetalles.estado }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Pagado:</h6>
+                        <span class="badge" [ngClass]="{
+              'bg-success': reservaDetalles.pagado,
+              'bg-warning': !reservaDetalles.pagado
+            }">
+                            {{ reservaDetalles.pagado ? 'Sí' : 'No' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" (click)="cancelarReserva(reservaDetalles)">
+                    <i class="bi bi-x-circle me-1"></i>Cancelar Reserva
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalDetallesReserva()">
+                    <i class="bi bi-x-circle me-1"></i>Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

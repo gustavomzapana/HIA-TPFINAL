@@ -1,0 +1,51 @@
+<div class="noticias-carousel-wrapper mt-4 mb-4"> <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 200px;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando noticias...</span>
+    </div>
+    <p class="ms-3">Cargando noticias para el carrusel...</p>
+  </div>
+
+  <div *ngIf="hasError" class="alert alert-danger" role="alert">
+    Error al cargar las noticias. Por favor, inténtalo de nuevo.
+  </div>
+
+  <div *ngIf="!isLoading && !hasError && noticias.length > 0"
+       id="noticiasCarousel"
+       class="carousel slide carousel-fade" data-bs-ride="carousel"
+       #noticiasCarousel>
+
+    <div class="carousel-indicators">
+      <button *ngFor="let noticia of noticias; let i = index"
+              type="button"
+              data-bs-target="#noticiasCarousel"
+              [attr.data-bs-slide-to]="i"
+              [class.active]="i === 0"
+              [attr.aria-current]="i === 0 ? 'true' : null"
+              [attr.aria-label]="'Slide ' + (i + 1)"></button>
+    </div>
+
+    <div class="carousel-inner">
+      <div *ngFor="let noticia of noticias; let i = index"
+           class="carousel-item"
+           [class.active]="i === 0">
+        <img [src]="noticia.imagenUrl" class="d-block w-100 carousel-img" alt="{{ noticia.titulo }}">
+        <div class="carousel-caption d-none d-md-block news-caption"> <h5 class="news-title">{{ noticia.titulo }}</h5> <p class="news-content">{{ noticia.message | slice:0:150 }}{{ noticia.message.length > 150 ? '...' : '' }}</p>
+          <a [href]="noticia.link" class="btn btn-primary" target="_blank">Leer más</a>
+        </div>
+      </div>
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#noticiasCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Anterior</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#noticiasCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Siguiente</span>
+    </button>
+  </div>
+
+  <div *ngIf="!isLoading && !hasError && noticias.length === 0" class="alert alert-info mt-3" role="alert">
+    No hay noticias disponibles para mostrar en el carrusel en este momento.
+  </div>
+</div>

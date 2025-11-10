@@ -1,0 +1,129 @@
+<div class="contacto-container">
+    <!-- Sección del Mapa -->
+    <section class="mapa-section mt-5">
+        <h2 class="section-title">Nuestra Ubicación</h2>
+        <div class="mapa-wrapper">
+            <iframe width="100%" height="450" style="border:0" loading="lazy" allowfullscreen
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps?q=-24.184514,-65.311673&z=17&output=embed&hl=es">
+            </iframe>
+        </div>
+    </section>
+
+    <!-- Sección de Información de Contacto -->
+    <section class="info-contacto">
+        <div class="contacto-grid">
+            <!-- Información Principal -->
+            <div class="info-principal">
+                <h2 class="section-title">Información de Contacto</h2>
+
+                <div class="contacto-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <h3>Dirección</h3>
+                        <p>Gral. Alvear N° 1337<br>San Salvador de Jujuy, Jujuy</p>
+                    </div>
+                </div>
+
+                <div class="contacto-item">
+                    <i class="fas fa-phone"></i>
+                    <div>
+                        <h3>Teléfono</h3>
+                        <p><a href="tel:+543814123456">+54 388 412-3456</a></p>
+                    </div>
+                </div>
+
+                <div class="contacto-item">
+                    <i class="fas fa-envelope"></i>
+                    <div>
+                        <h3>Email</h3>
+                        <p><a href="mailto:info&#64;empresa.com">info&#64;empresa.com</a></p>
+                    </div>
+                </div>
+
+                <div class="contacto-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h3>Horarios de Atención</h3>
+                        <p>
+                            Lunes a Viernes: 8:00 - 18:00<br>
+                            Sabados y Domingos: Cerrado
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Redes Sociales -->
+                <div class="redes-sociales">
+                    <h3>Síguenos en:</h3>
+                    <div class="social-links">
+                        <a href="https://wa.me/543814123456" target="_blank" class="social-link whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WhatsApp</span>
+                        </a>
+                        <a href="https://www.facebook.com/APUNJU.GREMIO" target="_blank" class="social-link facebook">
+                            <i class="fab fa-facebook-f"></i>
+                            <span>Facebook</span>
+                        </a>
+                        <a href="https://www.instagram.com/apunju.oficial" target="_blank"
+                            class="social-link instagram">
+                            <i class="fab fa-instagram"></i>
+                            <span>Instagram</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Servicios Ofrecidos -->
+            <div class="servicios-section">
+                    <h2 class="section-title ">Nuestros Servicios</h2>
+                    <div class="servicios-grid">
+                        <div class="servicio-card">
+                            <i class="fas fa-gavel"></i>
+                            <h3>Asesoramiento Legal</h3>
+                            <p>Consultas y representación legal para afiliados en temas laborales y gremiales.</p>
+                        </div>
+                        <div class="servicio-card">
+                            <i class="fas fa-swimming-pool"></i>
+                            <h3>Instalaciones Recreativas</h3>
+                            <p>Acceso a piletas, canchas deportivas y espacios para eventos familiares.</p>
+                        </div>
+                        <div class="servicio-card">
+                            <i class="fas fa-users"></i>
+                            <h3>Actividades Sociales y Recreativas</h3>
+                            <p>Organización de eventos, festividades, actividades para la familia y días especiales.</p>
+                        </div>
+                        <div class="servicio-card">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h3>Capacitación y Formación</h3>
+                            <p>Cursos, talleres y programas de formación profesional para el desarrollo laboral.</p>
+                        </div>
+                        <div class="servicio-card">
+                            <i class="fas fa-tags"></i>
+                            <h3>Convenios y Descuentos</h3>
+                            <p>Descuentos en comercios, farmacias, ópticas, turismo y servicios médicos adheridos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+
+    <!-- Sección de Preguntas Frecuentes -->
+    <section class="faq-section-container">
+        <div class="faq-section">
+            <h2 class="section-title">Preguntas Frecuentes</h2>
+
+            <div class="faq-item" *ngFor="let faq of faqs; let i = index">
+                <div class="faq-question" (click)="toggleFaq(i)" [class.active]="faq.isOpen">
+                    <i class="fas fa-question-circle"></i>
+                    <h3>{{ faq.pregunta }}</h3>
+                    <i class="fas fa-chevron-down faq-arrow" [class.rotated]="faq.isOpen"></i>
+                </div>
+                <div class="faq-answer" [class.show]="faq.isOpen">
+                    <p>{{ faq.respuesta }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>

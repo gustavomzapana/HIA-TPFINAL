@@ -1,0 +1,30 @@
+<div class="card mt-4 mb-4">
+  <div class="card-header bg-primary text-white">
+    <h5>Crear Nueva Publicación</h5>
+  </div>
+  <div class="card-body">
+    <form (ngSubmit)="onSubmit()">
+      <!-- Título -->
+      <div class="mb-3">
+        <label for="titulo" class="form-label">Título:</label>
+        <input type="text" id="titulo" name="titulo" [(ngModel)]="nuevaNoticia.titulo" class="form-control" required>
+      </div>
+
+      <!-- Contenido -->
+      <div class="mb-3">
+        <label for="contenido" class="form-label">Contenido:</label>
+        <textarea id="contenido" name="contenido" [(ngModel)]="nuevaNoticia.message" rows="5" class="form-control" required></textarea>
+      </div>
+
+      <!-- Imagen (URL opcional) -->
+      <div class="mb-3">
+        <label for="imagenUrl" class="form-label">URL de la Imagen (opcional):</label>
+        <input type="url" id="imagenUrl" name="imagenUrl" [(ngModel)]="nuevaNoticia.imagenUrl" class="form-control">
+      </div>
+
+      <!-- Botón para enviar el formulario -->
+      <button type="submit" class="btn btn-success mt-3">Crear Noticia</button>
+    </form>
+  </div>
+</div>
+

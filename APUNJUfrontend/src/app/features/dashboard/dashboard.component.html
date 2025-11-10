@@ -1,0 +1,203 @@
+<section id="hero-section" class="carousel slide carousel-fade" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active hero-fade-in"
+      style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('assets/images/gestionApunju.jpg');">
+      <div class="container h-100">
+        <div class="row h-100 align-items-center">
+          <div class="col-lg-8 text-center text-lg-start">
+            <div class="hero-content">
+              <h1 class="hero-title animate__animated animate__fadeInDown">APUNJU:<br><span class="highlight">La Fuerza
+                  NODOCENTE</span><br>de la UNJu</h1>
+              <p class="lead mb-4 mt-3 animate__animated animate__fadeInUp animate__delay-1s">
+                Representamos al conjunto de compañerxs NODOCENTES de la Universidad Nacional de Jujuy.
+              </p>
+              <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
+                <a href="/contacto"
+                  class="btn btn-primary btn-lg px-4 animate__animated animate__fadeInUp animate__delay-1-5s">Contáctanos</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-item hero-fade-in"
+      style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('assets/images/gestionApunju.jpg');">
+      <div class="container h-100">
+        <div class="row h-100 align-items-center">
+          <div class="col-lg-8 text-center text-lg-start">
+            <div class="hero-content">
+              <h1 class="hero-title animate__animated animate__fadeInDown">Desarrolla tu <span
+                  class="highlight">Potencial</span> con Nuestros Talleres</h1>
+              <p class="lead mb-4 mt-3 animate__animated animate__fadeInUp animate__delay-1s">Aprende algo
+                nuevo y conecta con tu creatividad en un entorno inspirador.</p>
+              <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
+                <a href="/actividades/talleres"
+                  class="btn btn-primary btn-lg px-4 animate__animated animate__fadeInUp animate__delay-1-5s">Ver
+                  Talleres</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#hero-section" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#hero-section" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</section>
+
+<!-- Noticias manuales -->
+<section id="noticias-cards" class="py-5">
+  <div class="container">
+     <h2 class="text mb-4"
+      style="color: var(--text-light); font-weight: bold; font-size: 2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.6);">
+      Noticias APUNJu
+    </h2>
+    <!--  <h2 class="text mb-4"
+      style="color: var(--text-light); font-weight: bold; font-size: 2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.6);">
+      Noticias <span style="color: var(--primary-blue-lighter); text-shadow: none;">APUNJu</span>
+    </h2>  -->
+    <app-carrusel-cards-news [noticias]="noticiasManual"></app-carrusel-cards-news>
+  </div>
+</section>
+
+<section id="acerca-de" class="container my-5 py-5 acerca-fade-in">
+  <div class="row align-items-center">
+    <div class="col-md-6 order-md-2">
+      <img src="assets/images/cabañaApunju.jpg" alt="Cabaña Apunju" class="img-fluid rounded shadow-lg img-hover-zoom"
+        alt="Paisaje de Jujuy con cabaña">
+    </div>
+    <div class="col-md-6 order-md-1 mt-4 mt-md-0">
+      <h2 class="text-primary-dark mb-3">Tu Refugio en un lugar perfecto, la naturaleza te espera</h2>
+      <p class="lead">En la provincia de Jujuy, te invitamos a un lugar donde la naturaleza se fusiona con el
+        bienestar.</p>
+      <p>Nuestra cabaña está diseñada para ofrecerte la máxima comodidad y conexión con el entorno</p>
+      <a href="#" class="btn btn-outline-secondary-dark mt-3 btn-scale-hover">Reserva Ahora <i
+          class="fas fa-arrow-right ms-2"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- Noticias de Facebook -->
+<section id="noticias-cards-2" class="py-5">
+  <div class="container">
+    <h2 class="text mb-4"
+      style="color: var(--text-light); font-weight: bold; font-size: 2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.6);">
+      Noticias desde Facebook
+    </h2>
+    <app-carrusel-cards-news [noticias]="noticiasFacebook"></app-carrusel-cards-news>
+  </div>
+</section>
+
+
+<section id="actividades" class="py-5 talleres-fade-in">
+  <div class="container">
+    <h2 class="text-center mb-5 text-primary-dark">Nuestras Actividades: Talleres, Cursos y Capacitaciones</h2>
+    <div *ngIf="actividades.length === 0" class="text-center py-5">
+      <div class="alert alert-info shadow-sm" role="alert">
+        <i class="bi bi-info-circle-fill me-2"></i>
+        <strong>No hay actividades disponibles en este momento.</strong>
+        <p class="mb-0 mt-2">Pronto habrá nuevas propuestas, ¡mantente atento!</p>
+      </div>
+    </div>
+    <div *ngIf="actividades.length > 0">
+      <div id="carouselActividades" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">
+        <div class="carousel-inner">
+          <ng-container *ngFor="let grupo of gruposActividades; let i = index">
+            <div class="carousel-item" [class.active]="i === 0">
+              <div class="row justify-content-center">
+                <ng-container *ngFor="let actividad of grupo">
+                  <div class="col-12 col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100 shadow-sm border-0 card-hover-effect">
+                      <div class="position-relative">
+                        <img [src]="actividad['imagen'] || 'https://via.placeholder.com/400x150?text=Actividad'"
+                          [alt]="actividad['nombreCurso'] || actividad['nombre']" class="card-img-top"
+                          style="height: 150px; object-fit: cover;">
+                        <span class="position-absolute top-0 end-0 m-2 badge" [ngStyle]="{
+                          'background-color': actividad.tipo === 'Curso' ? '#e3f2fd' :
+                                             actividad.tipo === 'Taller' ? '#ffe0b2' : '#d1e7dd',
+                          'color': actividad.tipo === 'Curso' ? '#1565c0' :
+                                    actividad.tipo === 'Taller' ? '#ef6c00' : '#0f5132'
+                        }">
+                          <i class="bi" [ngClass]="{
+                            'bi-book': actividad.tipo === 'Curso',
+                            'bi-brush': actividad.tipo === 'Taller',
+                            'bi-lightbulb': actividad.tipo === 'Capacitacion'
+                          }"></i>
+                          {{ actividad.tipo }}
+                        </span>
+                      </div>
+                      <div class="card-body d-flex flex-column p-3">
+                        <h6 class="card-title fw-bold text-dark mb-2">
+                          {{ actividad['nombreCurso'] || actividad['nombre'] }}
+                        </h6>
+                        <p class="card-text text-muted mb-2 flex-grow-1" style="font-size: 0.9rem;">
+                          {{ actividad['descripcion'] | slice:0:80 }}
+                          <span *ngIf="actividad['descripcion']?.length > 80">...</span>
+                        </p>
+                        <div class="mb-2">
+                          <div class="d-flex align-items-center mb-1">
+                            <i class="bi bi-calendar-event me-2" style="color: var(--primary-blue)"></i>
+                            <small class="text-muted" style="font-size: 0.8rem;">
+                              {{ actividad['fechaInicio'] | date:'dd/MM/yyyy' }}
+                              <span *ngIf="actividad['fechaFin']"> - {{ actividad['fechaFin'] | date:'dd/MM/yyyy'
+                                }}</span>
+                            </small>
+                          </div>
+                          <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-people me-2" style="color: var(--primary-blue)"></i>
+                            <small class="text-muted" style="font-size: 0.8rem;">
+                              Cupos: <span class="fw-semibold">
+                                {{ (actividad['cuposAfiliados'] + actividad['cuposNoAfiliados']) || actividad['cupo'] ||
+                                '-' }}
+                              </span>
+                            </small>
+                          </div>
+                        </div>
+                        <div class="border-top pt-2 mb-2">
+                          <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small text-muted">No afiliado:</span>
+                            <span class="h6 mb-0" style="color: var(--primary-blue); font-weight: bold;">
+                              {{ actividad['precioNoAfiliado'] ? ('$' + actividad['precioNoAfiliado']) :
+                              (actividad['precio'] ? ('$' + actividad['precio']) : '-') }}
+                            </span>
+                          </div>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <span class="small text-muted">Afiliado:</span>
+                            <span class="fw-bold text-success">
+                              {{ actividad['precioAfiliado'] === 0 ||
+                              actividad['precioAfiliado'] === '0' ? 'Gratuito' :
+                              (actividad['precioAfiliado'] ? ('$' + actividad['precioAfiliado']) : 'Consultar') }}
+                            </span>
+                          </div>
+                        </div>
+                        <a *ngIf="actividad.tipo && actividad['_id']" [routerLink]="['/inscripcion']"
+                          [queryParams]="{ tipo: actividad['tipo'], id: actividad['_id'] }"
+                          class="btn-primary-created btn-confirm mt-2">
+                          <i class="bi bi-pencil-square me-2"></i>Inscribirse
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselActividades" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+          <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselActividades" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+          <span class="visually-hidden">Siguiente</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
