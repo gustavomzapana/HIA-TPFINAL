@@ -1,0 +1,414 @@
+/* Variables de colores */
+:host {
+    --primary-blue: #1a365d;
+    --primary-blue-light: #2c5282;
+    --primary-blue-lighter: #4299e1;
+    --text-white: #ffffff;
+    --text-light: #f7fafc;
+    --text-muted: #01050a;
+    --bg-light: #f8f9fa;    
+    --border-radius: 0.5rem;
+    --transition: all 0.3s ease;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.contacto-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.section-title {
+    color: var(--primary-blue);
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    border-bottom: 3px solid var(--primary-blue-lighter);
+    padding-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+/* Sección del Mapa */
+.mapa-section {
+    margin-bottom: 3rem;
+}
+
+.mapa-wrapper {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 2px solid var(--primary-blue-lighter);
+}
+
+/* Grid de Contacto */
+.contacto-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 2rem;
+}
+
+/* Información Principal */
+.info-principal {
+    background: linear-gradient(135deg, var(--text-light), var(--bg-light));
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(66, 153, 225, 0.1);
+}
+
+.contacto-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--text-white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 5px rgba(26, 54, 93, 0.05);
+    border: 1px solid rgba(66, 153, 225, 0.1);
+    transition: var(--transition);
+}
+
+.contacto-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    border-color: var(--primary-blue-lighter);
+}
+
+.contacto-item i {
+    font-size: 1.5rem;
+    color: var(--primary-blue-lighter);
+    margin-right: 1rem;
+    margin-top: 0.25rem;
+    min-width: 30px;
+}
+
+.contacto-item h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--primary-blue);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.contacto-item p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.contacto-item a {
+    color: var(--primary-blue-lighter);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.contacto-item a:hover {
+    color: var(--primary-blue);
+    text-decoration: underline;
+}
+
+/* Redes Sociales */
+.redes-sociales {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--text-white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 5px rgba(26, 54, 93, 0.05);
+    border: 1px solid rgba(66, 153, 225, 0.1);
+}
+
+.redes-sociales h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.2rem;
+    border-radius: 25px;
+    text-decoration: none;
+    color: var(--text-white);
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.social-link i {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.social-link.whatsapp {
+    background: linear-gradient(135deg, #25d366, #1da851);
+}
+
+.social-link.facebook {
+    background: linear-gradient(135deg, #1877f2, #166fe5);
+}
+
+.social-link.instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.social-link:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* Servicios */
+.servicios-section {
+    background: linear-gradient(135deg, var(--text-light), var(--bg-light));
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(66, 153, 225, 0.1);
+}
+
+.servicios-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.servicio-card {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--text-white);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    border: 2px solid rgba(66, 153, 225, 0.1);
+}
+
+.servicio-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-blue-lighter);
+    background: var(--text-white);
+    box-shadow: var(--shadow);
+}
+
+.servicio-card i {
+    font-size: 2.5rem;
+    color: var(--primary-blue-lighter);
+    margin-bottom: 1rem;
+    transition: var(--transition);
+}
+
+.servicio-card:hover i {
+    color: var(--primary-blue);
+    transform: scale(1.1);
+}
+
+.servicio-card h3 {
+    color: var(--primary-blue);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.servicio-card p {
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* FAQ Accordion Styles */
+.faq-section-container {
+    margin-top: 3rem;
+}
+
+.faq-section {
+    background: linear-gradient(135deg, var(--text-light), var(--bg-light));
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(66, 153, 225, 0.1);
+}
+
+.faq-item {
+    margin-bottom: 1rem;
+    border: 1px solid rgba(66, 153, 225, 0.2);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: var(--transition);
+    background: var(--text-white);
+}
+
+.faq-item:hover {
+    box-shadow: var(--shadow);
+    border-color: var(--primary-blue-lighter);
+}
+
+.faq-question {
+    display: flex;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    background: var(--text-white);
+    cursor: pointer;
+    transition: var(--transition);
+    user-select: none;
+    position: relative;
+}
+
+.faq-question:hover {
+    background: var(--text-light);
+}
+
+.faq-question.active {
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+    color: var(--text-white);
+}
+
+.faq-question.active i {
+    color: var(--text-white);
+}
+
+.faq-question i.fa-question-circle {
+    color: var(--primary-blue-lighter);
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    transition: var(--transition);
+}
+
+.faq-question h3 {
+    margin: 0;
+    flex: 1;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: var(--transition);
+    color: var(--primary-blue);
+}
+
+.faq-question.active h3 {
+    color: var(--text-white);
+}
+
+.faq-arrow {
+    font-size: 0.9rem;
+    transition: transform 0.3s ease;
+    color: var(--text-muted);
+}
+
+.faq-arrow.rotated {
+    transform: rotate(180deg);
+}
+
+.faq-question.active .faq-arrow {
+    color: var(--text-white);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    background: var(--text-white);
+}
+
+.faq-answer.show {
+    max-height: 200px;
+    padding: 1.5rem;
+    border-top: 1px solid rgba(66, 153, 225, 0.1);
+}
+
+.faq-answer p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Animación suave para el contenido */
+.faq-answer {
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estados activos más elegantes */
+.faq-question.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .contacto-container {
+        padding: 1rem;
+    }
+
+    .contacto-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .servicios-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .social-links {
+        flex-direction: column;
+    }
+
+    .social-link {
+        justify-content: center;
+    }
+
+    .faq-question {
+        padding: 1rem;
+    }
+
+    .faq-question h3 {
+        font-size: 1rem;
+    }
+
+    .faq-answer.show {
+        padding: 1rem;
+        max-height: 300px;
+    }
+
+    .faq-question i.fa-question-circle {
+        margin-right: 0.8rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .servicios-grid {
+        gap: 1rem;
+    }
+
+    .servicio-card {
+        padding: 1rem;
+    }
+
+    .servicio-card i {
+        font-size: 2rem;
+    }
+
+    .faq-question {
+        padding: 0.8rem;
+    }
+
+    .faq-question h3 {
+        font-size: 0.9rem;
+    }
+
+    .faq-arrow {
+        font-size: 0.8rem;
+    }
+}

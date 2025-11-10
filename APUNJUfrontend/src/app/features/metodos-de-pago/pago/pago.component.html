@@ -1,0 +1,68 @@
+<div class="text-center mb-4" *ngIf="mp_init_point">
+  <!-- <div class="text-center mb-4"> -->
+  <div class="qr-code-placeholder bg-light p-3 d-inline-block mb-3">
+    <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + mp_init_point"
+      alt="Código QR de pago" class="img-fluid" style="width: 180px;">
+  </div>
+  <p class="text-muted small">Escanea el código QR para realizar el pago</p>
+  <a [href]="mp_init_point" target="_blank" class="text-decoration-none small text-primary">
+    <i class="fas fa-external-link-alt me-1"></i>Redirigir al pago
+  </a>
+</div>
+<!-- <div *ngIf="!mp_init_point" class="text-center">
+        <button class="btn btn-success" (click)="iniciarPago()">
+          <i class="fas fa-credit-card me-2"></i>Generar Link de Pago
+        </button>
+      </div> -->
+<div class="alert alert-warning mt-3" role="alert">
+  <div class="d-flex align-items-center">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <div>
+      <strong>Importante:</strong> Tu reserva se confirmará una vez que se acredite el pago de la seña.
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Pago -->
+<!-- <div class="modal fade" id="confirmacionPagoModal" tabindex="-1" aria-labelledby="confirmacionPagoModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header text-white" style="background-color: var(--primary-blue);">
+        <h5 class="modal-title" id="confirmacionPagoModalLabel">
+          <i class="fas fa-check-circle me-2"></i>Reserva Confirmada
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <div class="mb-4">
+          <div class="icono-confirmacion mb-3">
+            <i class="fas fa-home text-primary" style="font-size: 3rem; color: var(--primary-blue) !important;"></i>
+          </div>
+          <h4 class="fw-bold mb-3" style="color: var(--primary-blue);">¡Reserva Procesada con Éxito!</h4>
+          <p class="mb-0">Tu reserva de cabaña ha sido confirmada correctamente.</p>
+          <p class="mb-0">Hemos enviado los detalles a tu correo electrónico.</p>
+        </div>
+        <div class="bg-light p-3 rounded text-start mb-4" style="border-left: 4px solid var(--primary-blue);">
+          <p class="mb-1"><strong>N° de Reserva:</strong> CAB-2025-00123</p>
+          <p class="mb-1"><strong>Cliente:</strong> Juan Perez</p>
+          <p class="mb-1"><strong>Teléfono:</strong> 3123456789</p>
+          <p class="mb-1"><strong>Cabaña:</strong> Cabaña Familiar</p>
+          <p class="mb-1"><strong>Capacidad:</strong> 6 personas</p>
+          <p class="mb-1"><strong>Check-in:</strong> 20/06/2025 - 14:00</p>
+          <p class="mb-1"><strong>Check-out:</strong> 22/06/2025 - 10:00</p>
+          <p class="mb-1"><strong>Noches:</strong> 2</p>
+          <p class="mb-0"><strong>Monto Total:</strong> <span class="fw-bold"
+              style="color: var(--primary-blue);">$50.000</span></p>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn text-white" data-bs-dismiss="modal"
+          style="background-color: var(--primary-blue);">
+          <i class="fas fa-print me-2"></i>Imprimir Comprobante
+        </button>
+      </div>
+    </div>
+  </div>
+</div> -->

@@ -1,0 +1,10 @@
+.login-box {
+  background-color: #e9edf0; /* Azul muy claro */
+  border: 2px solid #1c3964; /* Azul bootstrap primario */
+  box-shadow: 0 4px 15px rgba(13, 37, 94, 0.6); /* Sombra azul oscuro */
+  transition: box-shadow 0.3s ease;
+}
+
+.login-box:hover {
+  box-shadow: 0 6px 25px rgba(13, 37, 94, 0.8); /* Sombra más intensa al hover */
+}

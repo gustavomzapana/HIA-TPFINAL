@@ -1,0 +1,502 @@
+<div class="container mt-4 mb-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2><i class="bi bi-gear me-2"></i>Gestión de Actividades</h2>
+          <p class="text-muted">
+            Administrar {{ tipoSeleccionado }} |
+            Usuario: <strong>{{ getUsuarioActual()?.nombre || getUsuarioActual()?.email }}</strong>
+            <span class="badge bg-success ms-2">Admin</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pestañas de tipo de actividad -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <ul class="nav nav-pills justify-content-center">
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="tipoSeleccionado === 'talleres'" (click)="cambiarTipo('talleres')">
+            <i class="bi bi-tools me-2"></i>Talleres
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="tipoSeleccionado === 'cursos'" (click)="cambiarTipo('cursos')">
+            <i class="bi bi-book me-2"></i>Cursos
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" [class.active]="tipoSeleccionado === 'capacitaciones'"
+            (click)="cambiarTipo('capacitaciones')">
+            <i class="bi bi-mortarboard me-2"></i>Capacitaciones
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Mensajes -->
+  <div class="row mb-3" *ngIf="errorMessage || successMessage">
+    <div class="col-12">
+      <div class="alert alert-danger alert-dismissible fade show" *ngIf="errorMessage">
+        <i class="bi bi-exclamation-triangle me-2"></i>{{ errorMessage }}
+        <button type="button" class="btn-close" (click)="limpiarMensajes()"></button>
+      </div>
+      <div class="alert alert-success alert-dismissible fade show" *ngIf="successMessage">
+        <i class="bi bi-check-circle me-2"></i>{{ successMessage }}
+        <button type="button" class="btn-close" (click)="limpiarMensajes()"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controles de búsqueda y filtrado -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" class="form-control" placeholder="Buscar por nombre o descripción..."
+          [(ngModel)]="filtroTexto">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" [(ngModel)]="filtroEstado">
+        <option value="activos">Activos</option>
+        <option value="inactivos">Inactivos</option>
+        <option value="todos">Todos los estados</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary" (click)="abrirModal()">
+          <i class="bi bi-plus-circle me-2"></i>Crear {{ getTipoCapitalizado().slice(0, -1) }}
+        </button>
+        <button class="btn btn-outline-secondary" (click)="limpiarFiltros()">
+          <i class="bi bi-x-circle me-1"></i>Limpiar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2">Cargando {{ tipoSeleccionado }}...</p>
+  </div>
+
+  <!-- Tabla de actividades -->
+  <div *ngIf="!isLoading" class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Imagen</th>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Fechas</th>
+                  <th>Precio</th>
+                  <th>Cupos</th>
+                  <th>Estado</th>
+                  <th *ngIf="tipoSeleccionado === 'talleres'">Materiales</th>
+                  <th *ngIf="tipoSeleccionado === 'capacitaciones'">Modalidad</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let actividad of actividadesFiltradas" [class.table-secondary]="!actividad.activo">
+                  <td>
+                    <img [src]="actividad.imagen" [alt]="actividad.nombreCurso" class="rounded"
+                      [class.opacity-50]="!actividad.activo" style="width: 60px; height: 60px; object-fit: cover;"
+                      onerror="this.src='assets/images/default-activity.jpg'">
+                  </td>
+                  <td>
+                    <strong [class.text-muted]="!actividad.activo">{{ actividad.nombreCurso }}</strong>
+                    <span *ngIf="!actividad.activo" class="badge bg-danger ms-2">Eliminado</span>
+                  </td>
+                  <td>
+                    <span class="text-muted">
+                      {{ actividad.descripcion | slice:0:50 }}
+                      <span *ngIf="actividad.descripcion?.length > 50">...</span>
+                    </span>
+                  </td>
+                  <td>
+                    <small class="text-muted">
+                      <i class="bi bi-calendar-plus me-1"></i>{{ actividad.fechaInicio | date:'dd/MM/yyyy' }}<br>
+                      <i class="bi bi-calendar-check me-1"></i>{{ actividad.fechaFin | date:'dd/MM/yyyy' }}
+                    </small>
+                  </td>
+                  <td>
+                    <strong class="text-success">${{ actividad.precioNoAfiliado | number:'1.0-0' }}</strong>
+                  </td>
+                  <td>
+                    <span class="badge bg-info">
+                      A: {{ actividad.cuposAfiliados }}
+                    </span>
+                    <span class="badge bg-secondary">
+                      NA: {{ actividad.cuposNoAfiliados }}
+                    </span>
+                  </td>
+                  <td>
+                    <span [class]="getBadgeClass(actividad.activo)">
+                      {{ getEstadoTexto(actividad.activo) }}
+                    </span>
+                  </td>
+                  <!-- NUEVO: Columna de materiales para talleres -->
+                  <td *ngIf="tipoSeleccionado === 'talleres'">
+                    <div *ngIf="actividad.materiales?.length > 0">
+                      <span class="badge bg-light text-dark me-1"
+                        *ngFor="let material of actividad.materiales | slice:0:2">
+                        {{ material }}
+                      </span>
+                      <span class="badge bg-secondary" *ngIf="actividad.materiales.length > 2">
+                        +{{ actividad.materiales.length - 2 }}
+                      </span>
+                    </div>
+                    <small class="text-muted" *ngIf="!actividad.materiales?.length">
+                      Sin materiales
+                    </small>
+                  </td>
+                  <!-- NUEVO: Columna de modalidad para capacitaciones -->
+                  <td *ngIf="tipoSeleccionado === 'capacitaciones'">
+                    <span class="badge bg-light text-dark border">
+                      {{ actividad.modalidad || 'Presencial' }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <button class="btn btn-outline-primary" [disabled]="!actividad.activo"
+                        (click)="editarActividad(actividad)" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+
+                      <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown"
+                          [disabled]="generandoExcel" title="Reportes e Información">
+                          <i class="bi bi-file-earmark-spreadsheet" *ngIf="!generandoExcel"></i>
+                          <span class="spinner-border spinner-border-sm" *ngIf="generandoExcel"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li>
+                            <a class="dropdown-item" href="#"
+                              (click)="generarExcelInscripciones(actividad); $event.preventDefault()">
+                              <i class="bi bi-file-earmark-spreadsheet me-2 text-success"></i>
+                              Generar Nómina Excel
+                            </a>
+                          </li>
+                          <li>
+                            <a class="dropdown-item" href="#"
+                              (click)="verificarInscriptos(actividad); $event.preventDefault()">
+                              <i class="bi bi-info-circle me-2 text-info"></i>
+                              Ver Resumen de Inscriptos
+                            </a>
+                          </li>
+                          <li>
+                            <hr class="dropdown-divider">
+                          </li>
+                          <li>
+                            <a class="dropdown-item" href="#" (click)="verDetalles(actividad); $event.preventDefault()">
+                              <i class="bi bi-eye me-2 text-primary"></i>
+                              Ver Detalles Completos
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <button class="btn btn-outline-danger" *ngIf="actividad.activo"
+                        (click)="eliminarActividad(actividad)" title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr *ngIf="actividadesFiltradas.length === 0">
+                  <td [attr.colspan]="tipoSeleccionado === 'talleres' || tipoSeleccionado === 'capacitaciones' ? 9 : 8"
+                    class="text-center text-muted py-4">
+                    <i class="bi bi-inbox me-2"></i>No se encontraron {{ tipoSeleccionado }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PARA CREAR/EDITAR ACTIVIDAD -->
+  <div class="modal fade" id="actividadModal" tabindex="-1" [class.show]="mostrarModal"
+    [style.display]="mostrarModal ? 'block' : 'none'" [attr.aria-hidden]="!mostrarModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">
+            <i class="bi bi-plus-circle me-2" *ngIf="!actividadSeleccionada"></i>
+            <i class="bi bi-pencil me-2" *ngIf="actividadSeleccionada"></i>
+            {{ actividadSeleccionada ? 'Editar' : 'Crear' }} {{ getTipoCapitalizado().slice(0, -1) }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()"></button>
+        </div>
+
+        <div class="modal-body">
+          <form #actividadForm="ngForm" (ngSubmit)="guardarActividad()" novalidate>
+
+            <!-- Sección de Imagen - ACTUALIZADA -->
+            <div class="mb-4">
+              <div class="border rounded p-3 bg-light">
+                <h6 class="text-primary mb-3">
+                  <i class="bi bi-image me-2"></i>Imagen de la actividad
+                </h6>
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    Seleccionar imagen (opcional)
+                  </label>
+
+                  <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*"
+                    [disabled]="isSaving" #fileInput>
+
+                  <div class="form-text">
+                    <i class="bi bi-info-circle me-1"></i>
+                    La imagen se subirá automáticamente al seleccionarla
+                  </div>
+                </div>
+
+                <div *ngIf="imagenPreview" class="text-center">
+                  <div class="mb-2">
+                    <span class="badge bg-success" *ngIf="imagenUrlSubida">
+                      <i class="bi bi-check me-1"></i>Imagen subida exitosamente
+                    </span>
+                    <span class="badge bg-warning" *ngIf="!imagenUrlSubida && isSaving">
+                      <i class="bi bi-clock me-1"></i>Subiendo imagen...
+                    </span>
+                  </div>
+                  <img [src]="imagenPreview" alt="Previsualización" class="img-thumbnail shadow-sm"
+                    style="max-width: 250px; max-height: 200px; border-radius: 12px;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Información básica -->
+            <div class="row mb-4">
+              <div class="col-md-8">
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    Nombre del {{ tipoSeleccionado | slice:0:-1 }} *
+                  </label>
+                  <input type="text" class="form-control" [(ngModel)]="formularioActividad.nombreCurso"
+                    name="nombreCurso" required placeholder="Ej: Introducción a JavaScript" maxlength="100">
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    Precio no afiliados *
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" class="form-control" min="0" step="100"
+                      [(ngModel)]="formularioActividad.precioNoAfiliado" name="precioNoAfiliado" required
+                      placeholder="0">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">
+                Descripción detallada *
+              </label>
+              <textarea class="form-control" rows="4" [(ngModel)]="formularioActividad.descripcion" name="descripcion"
+                required placeholder="Describe los objetivos, contenido, metodología y beneficios de la actividad..."
+                maxlength="500"></textarea>
+            </div>
+
+            <!-- NUEVO: Campos específicos para TALLERES -->
+            <div class="mb-4" *ngIf="tipoSeleccionado === 'talleres'">
+              <div class="border rounded p-3 bg-light">
+                <h6 class="text-primary mb-3">
+                  <i class="bi bi-tools me-2"></i>Materiales del Taller
+                </h6>
+
+                <div class="mb-3">
+                  <div class="input-group">
+                    <input type="text" class="form-control" [(ngModel)]="nuevoMaterial" name="nuevoMaterial"
+                      placeholder="Ej: Notebook, cables, herramientas..." maxlength="100"
+                      (keyup.enter)="agregarMaterial()">
+                    <button type="button" class="btn btn-outline-primary" (click)="agregarMaterial()"
+                      [disabled]="!nuevoMaterial.trim()">
+                      <i class="bi bi-plus"></i> Agregar
+                    </button>
+                  </div>
+                </div>
+
+                <div *ngIf="materialesTaller.length > 0" class="mb-3">
+                  <div class="d-flex flex-wrap gap-2">
+                    <span *ngFor="let material of materialesTaller; let i = index"
+                      class="badge bg-secondary d-flex align-items-center gap-2 px-3 py-2">
+                      <i class="bi bi-tools"></i>
+                      {{ material }}
+                      <button type="button" class="btn-close btn-close-white" (click)="eliminarMaterial(i)"
+                        style="font-size: 0.7em;" title="Eliminar material"></button>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="form-text">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Agregue los materiales necesarios para el taller. Se requiere al menos uno.
+                </div>
+              </div>
+            </div>
+
+            <!-- NUEVO: Campos específicos para CAPACITACIONES -->
+            <div class="mb-4" *ngIf="tipoSeleccionado === 'capacitaciones'">
+              <div class="border rounded p-3 bg-light">
+                <h6 class="text-primary mb-3">
+                  <i class="bi bi-mortarboard me-2"></i>Modalidad de la Capacitación
+                </h6>
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    Modalidad *
+                  </label>
+                  <select class="form-select" [(ngModel)]="modalidadCapacitacion" name="modalidad">
+                    <option value="presencial">
+                      <i class="bi bi-person-fill"></i> Presencial
+                    </option>
+                    <option value="virtual">
+                      <i class="bi bi-laptop"></i> Virtual
+                    </option>
+                    <option value="hibrida">
+                      <i class="bi bi-arrow-left-right"></i> Híbrida
+                    </option>
+                  </select>
+                </div>
+
+                <div class="form-text">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Seleccione la modalidad de dictado de la capacitación
+                </div>
+              </div>
+            </div>
+
+            <!-- Fechas -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    Fecha de inicio *
+                  </label>
+                  <input type="date" class="form-control" [(ngModel)]="formularioActividad.fechaInicio"
+                    name="fechaInicio" required [min]="getFechaMinima()">
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    Fecha de finalización *
+                  </label>
+                  <input type="date" class="form-control" [(ngModel)]="formularioActividad.fechaFin" name="fechaFin"
+                    required [min]="formularioActividad.fechaInicio || getFechaMinima()">
+                </div>
+              </div>
+            </div>
+
+            <!-- Cupos -->
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    Cupos para afiliados *
+                  </label>
+                  <input type="number" class="form-control" [(ngModel)]="formularioActividad.cuposAfiliados"
+                    name="cuposAfiliados" min="0" required placeholder="0">
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label fw-bold">
+                    Cupos para no afiliados *
+                  </label>
+                  <input type="number" class="form-control" [(ngModel)]="formularioActividad.cuposNoAfiliados"
+                    name="cuposNoAfiliados" min="0" required placeholder="0">
+                </div>
+              </div>
+            </div>
+
+            <!-- Checkbox activo -->
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" [(ngModel)]="formularioActividad.activo" name="activo"
+                  id="activo">
+                <label class="form-check-label fw-bold" for="activo">
+                  Actividad activa
+                </label>
+                <div class="form-text">Solo las actividades activas serán visibles para los usuarios</div>
+              </div>
+            </div>
+
+            <!-- Resumen - ACTUALIZADO -->
+            <div class="alert alert-info"
+              *ngIf="formularioActividad.cuposAfiliados > 0 || formularioActividad.cuposNoAfiliados > 0">
+              <i class="bi bi-calculator me-2"></i>
+              <strong>Resumen:</strong>
+              <ul class="mb-0 mt-2">
+                <li>Total de cupos: {{ (formularioActividad.cuposAfiliados || 0) + (formularioActividad.cuposNoAfiliados
+                  || 0) }} participantes</li>
+                <li *ngIf="tipoSeleccionado === 'talleres' && materialesTaller.length > 0">
+                  Materiales: {{ materialesTaller.length }} items
+                </li>
+                <li *ngIf="tipoSeleccionado === 'capacitaciones'">
+                  Modalidad: {{ modalidadCapacitacion }}
+                </li>
+              </ul>
+            </div>
+
+            <!-- Mensajes en el modal -->
+            <div class="alert alert-danger" *ngIf="errorMessage">
+              <i class="bi bi-exclamation-triangle me-2"></i>{{ errorMessage }}
+            </div>
+            <div class="alert alert-success" *ngIf="successMessage">
+              <i class="bi bi-check-circle me-2"></i>{{ successMessage }}
+            </div>
+
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" (click)="cerrarModal()" [disabled]="isSaving">
+            <i class="bi bi-x-circle me-1"></i>
+            Cancelar
+          </button>
+
+          <button type="button" class="btn btn-outline-warning" (click)="limpiarFormulario()" [disabled]="isSaving">
+            <i class="bi bi-eraser me-1"></i>
+            Limpiar
+          </button>
+
+          <button type="button" class="btn btn-primary" (click)="guardarActividad()" [disabled]="isSaving">
+            <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+            <i *ngIf="!isSaving" class="bi bi-save me-1"></i>
+            {{ isSaving ? 'Guardando...' : (actividadSeleccionada ? 'Actualizar' : 'Crear') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay del modal -->
+  <div class="modal-backdrop fade show" *ngIf="mostrarModal" (click)="cerrarModal()"></div>
+</div>

@@ -1,0 +1,323 @@
+/* HERO SECTION MODERNA */
+#hero-section {
+  position: relative;
+  overflow: hidden;
+  color: white;
+  height: 70vh;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+#hero-section .carousel-inner,
+#hero-section .carousel-item {
+  width: 100%;
+  height: 100%;
+}
+
+#hero-section .carousel-item {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: transform 0.6s ease-in-out;
+  background-attachment: fixed;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem 0;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-title .highlight {
+  color: var(--primary-blue-lighter);
+  position: relative;
+  display: inline-block;
+}
+
+.hero-title .highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: var(--primary-blue-dark);
+  opacity: 0.7;
+  z-index: -1;
+  transform: skew(-15deg);
+}
+
+#hero-section .lead {
+  font-size: 1.4rem;
+  font-weight: 300;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  line-height: 1.6;
+    line-height: 1.2; /* Ajusta el interlineado si el título es largo */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+ background-color: #bdbdbd !important; /* gris claro */
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  filter: none !important;
+  background-size: 1.2rem 1.2rem;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+/* Ajustar los márgenes del párrafo p.lead para asegurar espacio entre el título (ahora absoluto)
+   y el resto del contenido inferior */
+#hero-section .carousel-caption p.lead {
+    /* El margen superior de p.lead ahora debe considerar el espacio entre el h1 (arriba)
+       y el resto del contenido (abajo). Se controla mejor con el padding-top del carousel-caption
+       pero como el h1 es absoluto, el p.lead puede necesitar un margin-top grande para evitarlo.
+       O, si solo p.lead y los botones están abajo, puedes darle un margin-top pequeño */
+    margin-top: 1rem; /* Margen entre el párrafo y lo que está antes (botones en este caso) */
+    margin-bottom: 1rem; /* Margen entre el párrafo y lo que está después */
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  #hero-section .carousel-caption {
+    padding-bottom: 1.5rem; /* Ajuste para pantallas medianas */
+    max-width: 95vw;
+  }
+  #hero-section .carousel-caption h1 {
+    font-size: 2rem; /* Ajusta el tamaño de fuente para móviles */
+    top: 1.5rem; /* Ajuste de posición superior para móviles */
+    width: 95%; /* Ajusta el ancho para móviles */
+  }
+}
+
+@media (max-width: 576px) {
+  #hero-section {
+    min-height: 40vh;
+  }
+  #hero-section .carousel-item {
+    min-height: 40vh;
+  }
+  #hero-section .carousel-caption h1 {
+    font-size: 1.3rem; /* Ajusta el tamaño de fuente para móviles pequeños */
+    top: 1rem; /* Ajuste de posición superior para móviles pequeños */
+    width: 95%; /* Ajusta el ancho para móviles pequeños */
+  }
+  #hero-section .carousel-caption p {
+    font-size: 1rem;
+  }
+   #hero-section .carousel-caption {
+    padding-bottom: 1rem; /* Ajuste para pantallas pequeñas */
+   }
+}
+
+/* SECCION DOS ACERCA-DE */
+/* Animación de fade-in para la sección acerca-de */
+.acerca-fade-in {
+  opacity: 0;
+  transform: translateY(40px);
+  animation: acercaFadeIn 1.2s ease-out forwards;
+}
+
+@keyframes acercaFadeIn {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Opcional: efecto de zoom al pasar el mouse sobre la imagen */
+.img-hover-zoom {
+  transition: transform 0.5s;
+}
+.img-hover-zoom:hover {
+  transform: scale(1.04);
+}
+
+/* Responsividad extra para la sección acerca-de */
+@media (max-width: 768px) {
+  #acerca-de .row {
+    flex-direction: column-reverse;
+  }
+  #acerca-de .col-md-6 {
+    text-align: center;
+  }
+  #acerca-de img {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Fondo personalizado */
+.bg-light-blue {
+  background-color: var(--bs-light-blue, #E3F6FC);
+}
+
+/* Efecto hover en las cards */
+.card-hover-effect {
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card-hover-effect:hover {
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15), 0 1.5px 6px rgba(0,0,0,0.08);
+  z-index:1;
+}
+
+/* Overlay para imagen */
+.overlay-gradient {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg,rgba(44,62,80,0.15) 0%,rgba(44,62,80,0.05) 100%);
+  pointer-events: none;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+/* Ajuste para el wrapper de la imagen */
+.card-img-top-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+/* Responsividad extra */
+@media (max-width: 768px) {
+  .card-title {
+    font-size: 1.1rem;
+  }
+  .card-text {
+    font-size: 0.98rem;
+  }
+}
+
+/* SECCION CUATRO TALLERES */
+/* Animación de fade-in para la sección talleres */
+.talleres-fade-in {
+  opacity: 0;
+  transform: translateY(40px);
+  animation: talleresFadeIn 1.2s ease-out forwards;
+}
+
+@keyframes talleresFadeIn {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Efecto hover en las cards (ya definido si usas el mismo que en cabañas) */
+.card-hover-effect {
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card-hover-effect:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 8px 32px rgba(44,62,80,0.15);
+}
+
+/* Overlay para imagen */
+.overlay-gradient {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(180deg,rgba(44,62,80,0.15) 0%,rgba(44,62,80,0.05) 100%);
+  pointer-events: none;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+/* Ajuste para el wrapper de la imagen */
+.card-img-top-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+/* Responsividad extra */
+@media (max-width: 768px) {
+  .card-title {
+    font-size: 1.1rem;
+  }
+  .card-text {
+    font-size: 0.98rem;}}
+
+section#noticias-cards {
+    background: linear-gradient(135deg, var(--primary-blue-lighter) 0%, var(--primary-blue-dark) 100%);
+    background-attachment: fixed;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 0;
+}
+
+/* Efecto sutil de textura/ruido */
+section#noticias-cards::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(255,255,255,0.1) 0%, transparent 20%);
+    pointer-events: none;
+}
+
+section#noticias-cards-2 {
+  background: linear-gradient(135deg, var(--primary-blue-lighter) 0%, var(--primary-blue-dark) 100%);
+  background-attachment: fixed;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem 0;
+}
+
+/* Efecto sutil de textura/ruido */
+section#noticias-cards-2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+      radial-gradient(circle at 10% 20%, rgba(255,255,255,0.1) 0%, transparent 20%),
+      radial-gradient(circle at 90% 80%, rgba(255,255,255,0.1) 0%, transparent 20%);
+  pointer-events: none;
+}
+
+@media (max-width: 576px) {
+  .card.h-100 {
+    min-height: 320px;
+    height: auto;
+    padding-bottom: 1rem;
+  }
+  .card-img-top {
+    height: 110px !important;
+    object-fit: cover;
+  }
+  .card-body {
+    padding: 0.8rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  #carouselActividades .carousel-control-prev,
+  #carouselActividades .carousel-control-next {
+    display: none !important;
+  }
+}

@@ -1,0 +1,210 @@
+<div class="container mt-4 mb-4">
+    <!-- Encabezado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="bi bi-building me-2"></i>Gestión de Recursos</h2>
+            <p class="text-muted">
+                Administración de recursos | Usuario: <strong>{{ getUsuarioActual().nombre || 'Administrador'
+                    }}</strong>
+                <span class="badge bg-success ms-2">Admin</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Filtro y botón de creación -->
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" placeholder="Buscar por nombre, descripción o ubicación..."
+                    [(ngModel)]="filtro" (input)="filtrarRecursos()">
+            </div>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="btn btn-primary" (click)="abrirModal()">
+                <i class="bi bi-plus-circle me-2"></i>Nuevo Recurso
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabla de recursos -->
+    <div class="card shadow-sm">
+        <div class="card-body table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Nombre</th>
+                        <th>Ubicación</th>
+                        <th>Capacidad</th>
+                        <th>Precio Afiliado</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let recurso of recursosFiltrados">
+                        <td>
+                            <img [src]="recurso.imagen || 'assets/images/default-resource.jpg'" alt="{{recurso.nombre}}"
+                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;">
+                        </td>
+                        <td>{{ recurso.nombre }}</td>
+                        <td>{{ recurso.ubicacion }}</td>
+                        <td>{{ recurso.capacidad }} personas</td>
+                        <td>${{ recurso.precios!.afiliado | number }}</td>
+                        <td>
+                            <span class="badge"
+                                [ngClass]="recurso.estado === 'disponible' ? 'bg-success' : 'bg-secondary'">
+                                {{ recurso.estado === 'disponible' ? 'Disponible' : 'No disponible' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-primary" (click)="abrirModal(recurso)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" (click)="eliminarRecurso(recurso)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="recursosFiltrados.length === 0">
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox me-2"></i>No se encontraron recursos
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar recurso -->
+    <div class="modal fade" tabindex="-1" [class.show]="mostrarModal" [style.display]="mostrarModal ? 'block' : 'none'">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        {{ recursoSeleccionado ? 'Editar Recurso' : 'Nuevo Recurso' }}
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form (ngSubmit)="guardarRecurso()" #recursoForm="ngForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Nombre *</label>
+                                    <input type="text" class="form-control" [(ngModel)]="formulario.nombre"
+                                        name="nombre" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Ubicación *</label>
+                                    <input type="text" class="form-control" [(ngModel)]="formulario.ubicacion"
+                                        name="ubicacion" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Capacidad *</label>
+                                    <input type="number" class="form-control" [(ngModel)]="formulario.capacidad"
+                                        name="capacidad" min="1" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Precio Afiliado *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control"
+                                            [(ngModel)]="formulario.precios!.afiliado" name="precioAfiliado" min="0"
+                                            step="0.01" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Precio No Afiliado *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control"
+                                            [(ngModel)]="formulario.precios!.noAfiliado" name="precioNoAfiliado" min="0"
+                                            step="0.01" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Estado *</label>
+                                    <select class="form-select" [(ngModel)]="formulario.estado" name="estado" required>
+                                        <option value="disponible">Disponible</option>
+                                        <option value="no-disponible">No Disponible</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Características</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control" #nuevaCaracteristica
+                                            placeholder="Agregar característica">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            (click)="agregarCaracteristica(nuevaCaracteristica.value); nuevaCaracteristica.value=''">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <span *ngFor="let car of formulario.caracteristicas"
+                                            class="badge bg-primary d-flex align-items-center">
+                                            {{ car }}
+                                            <button type="button" class="btn-close btn-close-white btn-sm ms-2"
+                                                (click)="eliminarCaracteristica(car)"></button>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Descripción *</label>
+                                    <textarea class="form-control" rows="4" [(ngModel)]="formulario.descripcion"
+                                        name="descripcion" required></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Imagen</label>
+                                    <input type="file" class="form-control" (change)="onFileSelected($event)"
+                                        accept="image/*">
+                                    <div class="mt-2" *ngIf="imagenPreview">
+                                        <img [src]="imagenPreview" alt="Vista previa" class="img-thumbnail"
+                                            style="max-height: 150px;">
+                                    </div>
+                                    <small class="text-muted">Tamaño recomendado: 800x600px</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-danger" *ngIf="errorMessage">
+                            <i class="bi bi-exclamation-triangle me-2"></i>{{ errorMessage }}
+                        </div>
+                        <div class="alert alert-success" *ngIf="successMessage">
+                            <i class="bi bi-check-circle me-2"></i>{{ successMessage }}
+                        </div>
+
+                        <div class="text-end mt-4">
+                            <button type="button" class="btn btn-outline-secondary me-2" (click)="cerrarModal()"
+                                [disabled]="isSaving">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary" [disabled]="isSaving">
+                                <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+                                <i *ngIf="!isSaving" class="bi bi-save me-1"></i>
+                                {{ recursoSeleccionado ? 'Actualizar' : 'Guardar' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay del modal -->
+    <div class="modal-backdrop fade show" *ngIf="mostrarModal" (click)="cerrarModal()"></div>
+</div>

@@ -1,0 +1,75 @@
+<div class="comprobante-container" id="comprobante">
+    <div class="comprobante-header">
+      <h4 class="text-primary">Comprobante de Reserva</h4>
+      <div class="comprobante-empresa">
+        <h3>{{recurso?.nombre}}</h3>
+        <p>{{recurso?.ubicacion}}</p>
+        <p>{{recurso?.descripcion}}</p>
+      </div>
+    </div>
+
+    <div class="comprobante-section">
+      <h4 class="section-title">Datos del Cliente</h4>
+      <div class="section-content">
+        <p><strong>Nombre:</strong> {{usuario?.nombre}} {{usuario?.apellido}}</p>
+        <p><strong>Email:</strong> {{usuario?.email}}</p>
+        <p><strong>Teléfono:</strong> {{usuario?.telefono || 'No especificado'}}</p>
+      </div>
+    </div>
+  
+    <div class="comprobante-section">
+      <h4 class="section-title">Datos de la Reserva</h4>
+      <div class="section-content">
+        <p><strong>N° de Reserva:</strong> RES-{{reserva?._id?.substring(0, 8) || '00000000'}}</p>
+        <p><strong>Fecha de emisión:</strong> {{today | date:'dd/MM/yyyy'}}</p>
+        <p><strong>Estado: </strong> <span class="badge bg-success">Confirmada</span></p>
+      </div>
+    </div>
+
+    <div class="comprobante-section">
+      <h4 class="section-title">Detalles del Pago</h4>
+      <div class="section-content">
+        <p><strong>N° de Pago:</strong> {{pago?._id?.substring(0, 8) || '00000000'}}</p>
+        <p><strong>Método de Pago:</strong> {{reserva?.metodoDePago}}</p>
+        <p><strong>Fecha de emisión:</strong> {{today | date:'dd/MM/yyyy'}}</p>
+        <p><strong>Estado: </strong> <span class="badge bg-success">Confirmada</span></p>
+        @if (reserva?.metodoDePago === 'planilla') {
+          @for (cuota of pago?.cuotas; track $index) {
+            <p><strong>Cuota {{cuota.numero}}:</strong> ${{cuota.monto}}</p>
+            <p><strong>Fecha de vencimiento: </strong> {{cuota.fechaVencimiento | date:'dd/MM/yyyy'}}</p>
+            <p><strong>Estado: </strong> <span class="badge bg-success">{{cuota.estado}}</span></p>
+          }
+        }
+
+      </div>
+    </div>
+  
+    <div class="comprobante-section">
+      <h4 class="section-title">Detalles de la Estadía</h4>
+      <div class="section-content">
+        <p><strong>Recurso:</strong> {{recurso?.nombre}}</p>
+        <p><strong>Fechas:</strong> 
+          <span *ngFor="let fecha of reserva?.fechas; let last = last">
+            {{fecha.fecha | date:'dd/MM/yyyy'}}{{!last ? ', ' : ''}}
+          </span>
+        </p>
+        <p><strong>Noches:</strong> {{reserva?.fechas?.length || 0}}</p>
+        <p><strong>Precio por noche:</strong> ${{precioPorDia}}</p>
+        <p class="total-amount"><strong>Total:</strong> ${{montoTotal}}</p>
+      </div>
+    </div>
+  
+    <div class="comprobante-footer">
+      <p class="text-muted">Gracias por elegirnos!</p>
+      <p class="text-muted">{{recurso?.descripcion}}</p>
+    </div>
+  
+    <div class="comprobante-actions mt-4 text-center">
+      <button class="btn btn-primary me-2" (click)="exportarPDF()">
+        <i class="fas fa-download me-2"></i>Descargar PDF
+      </button>
+      <button class="btn btn-outline-primary" (click)="printDocument()">
+        <i class="fas fa-print me-2"></i>Imprimir
+      </button>
+    </div>
+  </div>

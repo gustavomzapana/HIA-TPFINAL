@@ -1,0 +1,661 @@
+<!-- Contenedor principal con margen superior -->
+<div class="container-fluid mt-4 mb-5">
+
+  <!-- SECTOR: Título de la sección -->
+  <!-- SECTOR: Título de la sección -->
+<section class="row mb-4">
+  <div class="col-12 text-center">
+    <h2 class="text-primary fw-bold display-5">
+      <i class="bi bi-people-fill me-2"></i>Gestión de Usuarios
+    </h2>
+    <p class="text-secondary fs-5 fst-italic">
+      Administrador: {{ usuario?.nombre }} {{ usuario?.apellido }}
+    </p>
+    <hr class="mx-auto mt-3" style="width: 60px; border-top: 3px solid #0d6efd;" />
+  </div>
+</section>
+
+  <!-- SECTOR: Botones para abrir modal de agregar Afiliado e Invitado, y listas -->
+  <!-- SECTOR: Tarjetas de filtros de búsqueda -->
+<section class="row mb-4 justify-content-center">
+  <div class="col-lg-10 col-xl-9">
+    <!-- BOTONES DE ACCIÓN -->
+    <div class="row justify-content-center">
+      <div class="col-12 text-center">
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+          <button class="btn btn-outline-success" (click)="abrirModalCrearAfiliado()">
+            <i class="bi bi-person-plus me-2"></i>Agregar Afiliado
+          </button>
+          <button class="btn btn-outline-warning" (click)="abrirModalCrearInvitado()">
+            <i class="bi bi-person-plus-fill me-2"></i>Agregar Invitado
+          </button>
+          <button class="btn btn-outline-danger" (click)="listarDesafiliados()">
+            <i class="bi bi-person-x me-2"></i>Afiliados Inactivos
+          </button>
+          <button class="btn btn-outline-secondary" (click)="listarInvitados()">
+            <i class="bi bi-people-fill me-2"></i>Listar Invitados
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Separador visual -->
+    <hr class="my-4" style="border-top: 2px solid #0d6efd; width: 60px; margin-left: auto; margin-right: auto;" />
+
+    <!-- TARJETAS DE FILTROS -->
+    <div class="row">
+      <!-- Buscar por dependencia -->
+      <article class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100 border-primary">
+          <div class="card-body">
+            <h5 class="card-title text-primary">
+              <i class="bi bi-search me-2"></i>Filtrar por Dependencia
+            </h5>
+            <div class="input-group">
+              <select
+                class="form-select"
+                [(ngModel)]="dependencia"
+                name="filtroDependencia"
+              >
+                <option value="" disabled selected>
+                  Seleccionar dependencia
+                </option>
+                <option value="dependencia1">Dependencia1</option>
+                <option value="dependencia2">Dependencia2</option>
+                <option value="dependencia3">Dependencia3</option>
+              </select>
+              <button
+                class="btn btn-outline-primary"
+                type="button"
+                (click)="filtrarPorDependencia()"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Buscar por legajo -->
+      <article class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100 border-primary">
+          <div class="card-body">
+            <h5 class="card-title text-primary">
+              <i class="bi bi-search me-2"></i>Buscar por Legajo
+            </h5>
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Legajo"
+                aria-label="Legajo"
+                [(ngModel)]="legajo"
+                name="legajo"
+              />
+              <button
+                class="btn btn-outline-primary"
+                type="button"
+                (click)="usuarioPorLegajo()"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Buscar por DNI -->
+      <article class="col-md-4 mb-3">
+        <div class="card shadow-sm h-100 border-primary">
+          <div class="card-body">
+            <h5 class="card-title text-primary">
+              <i class="bi bi-search me-2"></i>Buscar por DNI
+            </h5>
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="DNI"
+                aria-label="DNI"
+                [(ngModel)]="dni"
+                name="dni"
+              />
+              <button
+                class="btn btn-outline-primary"
+                type="button"
+                (click)="usuarioPorDni()"
+              >
+                Buscar
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+  <!-- SECTOR: Tabla de listado de usuarios -->
+  <!-- SECTOR: Tabla de listado de usuarios -->
+  <section class="row mt-4 justify-content-center">
+    <div class="col-lg-10 col-xl-9"> <!-- Reducido a máx 10 columnas -->
+      <div class="card shadow-sm border-primary">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-people-fill me-2"></i>Listado de Usuarios
+          </h5>
+        </div>
+
+        <div class="card-body table-responsive">
+          <table class="table table-hover table-striped align-middle">
+            <thead class="table-light text-center">
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Legajo</th>
+                <th>Dependencia</th>
+                <th>Afiliado</th>
+                <th>Activo</th>
+                <th>Rol</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="text-center">
+              <tr *ngFor="let usuario of usuarios.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage); let i = index">
+                <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+                <td>{{ usuario.nombre }}</td>
+                <td>{{ usuario.apellido }}</td>
+                <td>{{ usuario.legajo }}</td>
+                <td>{{ usuario.dependencia }}</td>
+                <td>{{ usuario.esAfiliado ? "Sí" : "No" }}</td>
+                <td>{{ usuario.activo ? "Sí" : "No" }}</td>
+                <td>{{ usuario.rol }}</td>
+                <td>
+                  <div class="d-none d-md-flex gap-2 justify-content-center">
+                    <button class="btn btn-sm btn-outline-info" (click)="abrirModalDetalle(usuario)">
+                      <i class="bi bi-eye me-1"></i> Ver
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning" (click)="abrirModalEditar(usuario)">
+                      <i class="bi bi-pencil me-1"></i> Editar
+                    </button>
+                    <button *ngIf="mostrarBotonBaja" class="btn btn-sm btn-outline-danger" (click)="eliminarUsuario(usuario)">
+                      <i class="bi bi-person-dash me-1"></i> Dar baja
+                    </button>
+                  </div>
+
+                  <!-- Botones mobile -->
+                  <div class="dropdown d-md-none text-center">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                      <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                      <li>
+                        <button class="dropdown-item text-info" (click)="abrirModalDetalle(usuario)">
+                          <i class="bi bi-eye me-2"></i> Ver
+                        </button>
+                      </li>
+                      <li>
+                        <button class="dropdown-item text-warning" (click)="abrirModalEditar(usuario)">
+                          <i class="bi bi-pencil me-2"></i> Editar
+                        </button>
+                      </li>
+                      <li *ngIf="mostrarBotonBaja">
+                        <button class="dropdown-item text-danger" (click)="eliminarUsuario(usuario)">
+                          <i class="bi bi-person-dash me-2"></i> Dar baja
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <nav *ngIf="usuarios.length > itemsPerPage" class="mt-3">
+            <ul class="pagination justify-content-center mb-0">
+              <li class="page-item" [class.disabled]="currentPage === 1">
+                <button class="page-link" (click)="currentPage = currentPage - 1" [disabled]="currentPage === 1">
+                  Anterior
+                </button>
+              </li>
+
+              <li 
+                class="page-item" 
+                *ngFor="let page of [].constructor(totalPages); let i = index" 
+                [class.active]="currentPage === i + 1">
+                <button class="page-link" (click)="currentPage = i + 1">{{ i + 1 }}</button>
+              </li>
+
+              <li class="page-item" [class.disabled]="currentPage === totalPages">
+                <button class="page-link" (click)="currentPage = currentPage + 1" [disabled]="currentPage === totalPages">
+                  Siguiente
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  
+</div>
+
+<!-- Modal para agregar/editar usuario -->
+<div
+  class="modal fade"
+  id="userModal"
+  tabindex="-1"
+  aria-labelledby="userModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="userModalLabel">
+          <i class="bi bi-person-fill me-2"></i>
+          {{ editMode ? "Editar Usuario" : "Agregar Nuevo Usuario" }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <form #usuarioForm="ngForm" (ngSubmit)="guardarAfiliado(usuarioForm)">
+
+          <!-- NOMBRE Y APELLIDO -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="nombre" class="form-label">
+                <i class="bi bi-person me-1 text-primary"></i> Nombre <span class="text-danger">*</span>
+              </label>
+              <input type="text" id="nombre" class="form-control" name="nombre" [(ngModel)]="usuarioSeleccionado.nombre" required placeholder="Ej: Juan" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="apellido" class="form-label">
+                <i class="bi bi-person me-1 text-primary"></i> Apellido <span class="text-danger">*</span>
+              </label>
+              <input type="text" id="apellido" class="form-control" name="apellido" [(ngModel)]="usuarioSeleccionado.apellido" required placeholder="Ej: Pérez" />
+            </div>
+          </div>
+
+          <!-- EMAIL Y DNI -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="email" class="form-label">
+                <i class="bi bi-envelope-at me-1 text-primary"></i> Correo Electrónico <span class="text-danger">*</span>
+              </label>
+              <input type="email" id="email" class="form-control" name="email" [(ngModel)]="usuarioSeleccionado.email" required placeholder="correo@ejemplo.com" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="dni" class="form-label">
+                <i class="bi bi-credit-card-2-front me-1 text-primary"></i> DNI <span class="text-danger">*</span>
+              </label>
+              <input type="text" id="dni" class="form-control" name="dni" [(ngModel)]="usuarioSeleccionado.dni" required placeholder="Ej: 12345678" />
+            </div>
+          </div>
+
+          <!-- NACIMIENTO Y TELÉFONO -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="fNacimiento" class="form-label">
+                <i class="bi bi-calendar-date me-1 text-primary"></i> Fecha de Nacimiento <span class="text-danger">*</span>
+              </label>
+              <input type="date" id="fNacimiento" class="form-control" name="fNacimiento" [(ngModel)]="usuarioSeleccionado.fNacimiento" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="telefono" class="form-label">
+                <i class="bi bi-telephone me-1 text-primary"></i> Teléfono
+              </label>
+              <input type="text" id="telefono" class="form-control" name="telefono" [(ngModel)]="usuarioSeleccionado.telefono" placeholder="Ej: 3814123456" />
+            </div>
+          </div>
+
+          <!-- DOMICILIO Y LEGAJO -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="domicilio" class="form-label">
+                <i class="bi bi-house-door me-1 text-primary"></i> Domicilio
+              </label>
+              <input type="text" id="domicilio" class="form-control" name="domicilio" [(ngModel)]="usuarioSeleccionado.domicilio" placeholder="Calle y número" />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="legajo" class="form-label">
+                <i class="bi bi-hash me-1 text-primary"></i> Legajo
+              </label>
+              <input type="text" id="legajo" class="form-control" name="legajo" [(ngModel)]="usuarioSeleccionado.legajo" placeholder="Ej: 00123" />
+            </div>
+          </div>
+
+          <!-- DEPENDENCIA Y ROL -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="dependencia" class="form-label">
+                <i class="bi bi-building me-1 text-primary"></i> Dependencia <span class="text-danger">*</span>
+              </label>
+              <select id="dependencia" class="form-select" name="dependencia" [(ngModel)]="usuarioSeleccionado.dependencia" required>
+                <option value="" disabled selected>Seleccionar</option>
+                <option value="dependencia1">Dependencia1</option>
+                <option value="dependencia2">Dependencia2</option>
+                <option value="dependencia3">Dependencia3</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="rol" class="form-label">
+                <i class="bi bi-award me-1 text-primary"></i> Rol <span class="text-danger">*</span>
+              </label>
+              <select id="rol" class="form-select" name="rol" [(ngModel)]="usuarioSeleccionado.rol" required>
+                <option value="" disabled selected>Seleccionar</option>
+                <option value="Administrador">Administrador</option>
+                <option value="Afiliado">Afiliado</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ACTIVO (solo en modo edición) -->
+          <div class="form-check form-switch mb-3" *ngIf="editMode">
+            <input 
+              class="form-check-input" 
+              type="checkbox" 
+              id="activo" 
+              name="activo"
+              [(ngModel)]="usuarioSeleccionado.activo"
+            />
+            <label class="form-check-label" for="activo">
+              <i class="bi bi-toggle-on me-1 text-primary"></i> Usuario Activo
+            </label>
+          </div>
+
+          <!-- FOTO -->
+          <div class="mb-3">
+            <label for="foto" class="form-label">
+              <i class="bi bi-image me-1 text-primary"></i> URL de la Foto (opcional)
+            </label>
+            <input type="text" id="foto" class="form-control" name="foto" [(ngModel)]="usuarioSeleccionado.foto" placeholder="https://..." />
+          </div>
+
+          <!-- BOTONES -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="bi bi-x-lg me-1"></i> Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="usuarioForm.invalid">
+              <i class="bi bi-check-lg me-1"></i> {{ editMode ? "Guardar Cambios" : "Crear Usuario" }}
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Detalle de Usuario Estilo Moderno -->
+<div
+  class="modal fade"
+  id="userDetailModal"
+  tabindex="-1"
+  aria-labelledby="userDetailModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content rounded-4 shadow">
+
+      <!-- Encabezado -->
+      <div class="modal-header bg-primary text-white rounded-top-4">
+        <h5 class="modal-title" id="userDetailModalLabel">
+          <i class="bi bi-person-badge-fill me-2"></i> Detalles del Usuario
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Cerrar"
+        ></button>
+      </div>
+
+      <!-- Cuerpo -->
+      <div class="modal-body" *ngIf="usuarioDetalle">
+        <div class="row align-items-center p-3">
+          <!-- Avatar + Nombre -->
+          <div class="col-md-4 text-center mb-3 mb-md-0">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+              alt="Avatar"
+              class="rounded-circle border shadow-sm mb-3"
+              width="120"
+              height="120"
+            />
+            <h5 class="fw-bold">{{ usuarioDetalle.nombre }} {{ usuarioDetalle.apellido }}</h5>
+            <span class="badge bg-primary">{{ usuarioDetalle.rol }}</span>
+          </div>
+
+          <!-- Información -->
+          <div class="col-md-8">
+            <div class="row g-3">
+              <!-- Legajo y DNI -->
+              <div
+                class="col-6 info-box"
+                *ngIf="usuarioDetalle.esAfiliado === true || usuarioDetalle.esAfiliado === 'true'"
+              >
+                <i class="bi bi-hash me-2 text-primary"></i>
+                <strong>Legajo:</strong> {{ usuarioDetalle.legajo || '-' }}
+              </div>
+              <div class="col-6 info-box">
+                <i class="bi bi-credit-card-2-front me-2 text-primary"></i>
+                <strong>DNI:</strong> {{ usuarioDetalle.dni }}
+              </div>
+
+              <!-- Email y Domicilio -->
+              <div class="col-6 info-box">
+                <i class="bi bi-envelope-at me-2 text-primary"></i>
+                <strong>Email:</strong> {{ usuarioDetalle.email }}
+              </div>
+              <div class="col-6 info-box">
+                <i class="bi bi-house-door me-2 text-primary"></i>
+                <strong>Domicilio:</strong> {{ usuarioDetalle.domicilio || '-' }}
+              </div>
+
+              <!-- Teléfono y Fecha Nacimiento -->
+              <div class="col-6 info-box">
+                <i class="bi bi-telephone me-2 text-primary"></i>
+                <strong>Teléfono:</strong> {{ usuarioDetalle.telefono || '-' }}
+              </div>
+              <div class="col-6 info-box mb-3">
+                <i class="bi bi-calendar-date me-2 text-primary"></i>
+                <strong>F. Nacimiento:</strong>
+                {{ usuarioDetalle.fNacimiento | date: 'dd/MM/yyyy' }}
+              </div>
+
+              <!-- Dependencia y Afiliado -->
+              <div class="col-6 info-box"
+              *ngIf="usuarioDetalle.esAfiliado === true || usuarioDetalle.esAfiliado === 'true'">
+                <i class="bi bi-building me-2 text-primary"></i>
+                <strong>Dependencia:</strong> {{ usuarioDetalle.dependencia }}
+              </div>
+              <div class="col-6 info-box">
+                <i class="bi bi-person-check-fill me-2 text-primary"></i>
+                <strong>Afiliado:</strong> {{ usuarioDetalle.esAfiliado ? 'Sí' : 'No' }}
+              </div>
+            </div>
+            <!-- Activo -->
+            <div class="col-6 info-box mb-3">
+              <i class="bi bi-check-circle-fill me-2 text-primary"></i>
+              <strong>Estado:</strong>
+              <span
+                [ngClass]="usuarioDetalle.activo === true || usuarioDetalle.activo === 'true' ? 'text-success fw-bold' : 'text-danger fw-bold'"
+              >
+                {{ usuarioDetalle.activo === true || usuarioDetalle.activo === 'true' ? 'Activo' : 'Inactivo' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Footer -->
+      <div class="modal-footer rounded-bottom-4 bg-light">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          <i class="bi bi-x-lg me-1"></i> Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Modal para Agregar Invitado -->
+<div class="modal fade" id="invitadoModal" tabindex="-1" aria-labelledby="invitadoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form #invitadoForm="ngForm" (ngSubmit)="guardarInvitado(invitadoForm)">
+        <!-- HEADER -->
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="invitadoModalLabel">
+            <i class="bi bi-person-fill-add me-2"></i> Nuevo Invitado
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body">
+          <!-- Nombre y Apellido -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="bi bi-person me-1 text-success"></i> Nombre <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                name="nombre"
+                [(ngModel)]="nuevoInvitado.nombre"
+                required
+                placeholder="Ej: Ana"
+                #nombreInv="ngModel"
+                [ngClass]="{ 'is-invalid': nombreInv.invalid && nombreInv.touched }"
+              />
+              <div *ngIf="nombreInv.invalid && nombreInv.touched" class="text-danger small">
+                El nombre es obligatorio.
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="bi bi-person me-1 text-success"></i> Apellido <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                name="apellido"
+                [(ngModel)]="nuevoInvitado.apellido"
+                required
+                placeholder="Ej: López"
+                #apellidoInv="ngModel"
+                [ngClass]="{ 'is-invalid': apellidoInv.invalid && apellidoInv.touched }"
+              />
+              <div *ngIf="apellidoInv.invalid && apellidoInv.touched" class="text-danger small">
+                El apellido es obligatorio.
+              </div>
+            </div>
+          </div>
+
+          <!-- DNI y Teléfono -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="bi bi-credit-card-2-front me-1 text-success"></i> DNI <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                name="dni"
+                [(ngModel)]="nuevoInvitado.dni"
+                required
+                placeholder="Ej: 12345678"
+                #dniInv="ngModel"
+                [ngClass]="{ 'is-invalid': dniInv.invalid && dniInv.touched }"
+              />
+              <div *ngIf="dniInv.invalid && dniInv.touched" class="text-danger small">
+                El DNI es obligatorio.
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="bi bi-telephone me-1 text-success"></i> Teléfono
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                name="telefono"
+                [(ngModel)]="nuevoInvitado.telefono"
+                placeholder="Ej: 3814123456"
+              />
+            </div>
+          </div>
+
+          <!-- Correo y Fecha de nacimiento -->
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="bi bi-envelope-at me-1 text-success"></i> Correo Electrónico <span class="text-danger">*</span>
+              </label>
+              <input
+                type="email"
+                class="form-control"
+                name="email"
+                [(ngModel)]="nuevoInvitado.email"
+                required
+                placeholder="correo@ejemplo.com"
+                #emailInv="ngModel"
+                [ngClass]="{ 'is-invalid': emailInv.invalid && emailInv.touched }"
+              />
+              <div *ngIf="emailInv.invalid && emailInv.touched" class="text-danger small">
+                <div *ngIf="emailInv.errors?.['required']">El correo es obligatorio.</div>
+                <div *ngIf="emailInv.errors?.['email']">Formato inválido.</div>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="bi bi-calendar-date me-1 text-success"></i> Fecha de Nacimiento <span class="text-danger">*</span>
+              </label>
+              <input
+                type="date"
+                class="form-control"
+                name="fNacimiento"
+                [(ngModel)]="nuevoInvitado.fNacimiento"
+                required
+                #fnacInv="ngModel"
+                [ngClass]="{ 'is-invalid': fnacInv.invalid && fnacInv.touched }"
+              />
+              <div *ngIf="fnacInv.invalid && fnacInv.touched" class="text-danger small">
+                La fecha de nacimiento es obligatoria.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-lg me-1"></i> Cancelar
+          </button>
+          <button type="submit" class="btn btn-success" [disabled]="invitadoForm.invalid">
+            <i class="bi bi-person-plus-fill me-1"></i> Guardar Invitado
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Spinner de carga -->
+<div *ngIf="loading" class="text-center my-3">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>

@@ -1,0 +1,84 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Paleta de colores basada en el logo del gremio */
+:root {
+  /* Colores principales */
+  --primary-blue: #1a365d;
+  --primary-blue-dark: #0056b3;
+  --primary-blue-blue: #027BCE;
+  --primary-blue-light: #0496FF;       /* Azul oscuro del logo */
+  --primary-blue-lighter: #4BB3FD;  /* Versión más clara para hovers */
+   /* Para acentos */
+
+  --second-blue: #2A4759;
+  
+  /* Colores de texto */
+  --text-white: #ffffff;         /* Texto blanco */
+  --text-light: #f7fafc;         /* Texto gris muy claro */
+  --text-muted: #a0aec0;         /* Texto gris para elementos secundarios */
+  
+  /* Colores de fondo */
+  --bg-dark: #1a202c;            /* Fondo oscuro */
+  --bg-light: #f8f9fa;           /* Fondo claro */
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Estilos base */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--text-white);
+  background-color: var(--bg-light);
+  line-height: 1.5;
+}
+
+/* Button styles */
+.btn-primary-created {
+  background-color: var(--primary-blue);
+  color: var(--text-white);
+  border: none;
+  padding: 0.65rem 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.btn-primary-created:hover {
+  background-color: var(--primary-blue-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 86, 179, 0.2);
+}
+
+.btn-confirm::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: 0.5s;
+  z-index: -1;
+}
+
+.btn-confirm:hover::after {
+  transform: translateX(100%);
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(40px);
+  animation: FadeIn 1s ease-out forwards;
+}
+
+@keyframes FadeIn {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

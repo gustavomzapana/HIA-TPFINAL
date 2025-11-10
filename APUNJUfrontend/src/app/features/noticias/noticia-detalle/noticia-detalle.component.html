@@ -1,0 +1,21 @@
+<div class="container noticia-detalle" *ngIf="noticia">
+  <h1 class="mt-4">{{ noticia.titulo }}</h1>
+
+  <small class="text-muted">{{ noticia.createdAt | date:'fullDate' }}</small>
+
+  <img *ngIf="noticia.imagenUrl" [src]="noticia.imagenUrl" alt="Imagen de la noticia" class="img-fluid mt-3 mb-4 rounded">
+
+  <p class="lead">{{ noticia.message }}</p>
+
+  <div *ngIf="noticia.link">
+    <a [href]="noticia.link" target="_blank" class="btn btn-primary btn-detalle-noticia mt-3">
+        Ver publicación original <i class="fas fa-external-link-alt ms-2"></i></a>
+  </div>
+</div>
+
+<!-- Si hay error o no existe la noticia -->
+<div *ngIf="!noticia && cargaTerminada" class="alert alert-danger text-center mt-5">
+  No se pudo cargar la noticia. Verificá si existe o si hubo un error.
+</div>
+
+

@@ -1,0 +1,151 @@
+<div style="width: 100%;">
+  <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+    <div class="card-header bg-primary text-white p-3">
+      <h4 class="fw-bold mb-0"><i class="fas fa-clipboard-check me-2"></i>Terminos y Condiciones</h4>
+    </div>
+    <div class="card-body p-2">
+      <!-- Scrollspy -->
+      <div class="row g-0">
+        <!-- Menú lateral -->
+        <div class="col-lg-3 border-end">
+          <nav id="terms-nav" class="nav flex-column nav-pills h-100  justify-content-center">
+            <a class="nav-link" [class.active]="activeSection === 'reservas'" (click)="scrollTo('reservas', $event)">
+              <i class="fas fa-calendar-check me-1"></i>Reservas
+            </a>
+            <a class="nav-link" [class.active]="activeSection === 'pagos'" (click)="scrollTo('pagos', $event)">
+              <i class="fas fa-credit-card me-1"></i>Pagos
+            </a>
+            <a class="nav-link" [class.active]="activeSection === 'politica-cancelacion'"
+              (click)="scrollTo('politica-cancelacion', $event)">
+              <i class="fas fa-times-circle me-1"></i>Cancelaciones
+            </a>
+            <a class="nav-link" [class.active]="activeSection === 'check'" (click)="scrollTo('check', $event)">
+              <i class="fas fa-door-open me-1"></i>Check-in/out
+            </a>
+            <a class="nav-link" [class.active]="activeSection === 'normas'" (click)="scrollTo('normas', $event)">
+              <i class="fas fa-clipboard-list me-1"></i>Normas
+            </a>
+          </nav>
+        </div>
+
+        <!-- Contenido -->
+        <div class="col-lg-9">
+          <div #scrollContainer class="terms-content" (scroll)="onScroll($event)">
+            <section id="reservas" class="term-section">
+              <h4 class="term-title"><i class="fas fa-calendar-check me-2 text-primary"></i>Política de Reservas</h4>
+              <div class="term-content">
+                <p>La reserva se considera confirmada una vez realizado el pago del 50% del valor total de la estadía.
+                  El saldo deberá abonarse al momento del check-in.</p>
+                <p>El horario de ingreso es a partir de las 14:00 hs y el de egreso hasta las 10:00 hs del día de
+                  salida.</p>
+                <p>Se requiere presentar DNI y tarjeta de crédito a nombre del titular de la reserva al momento del
+                  check-in.</p>
+              </div>
+            </section>
+
+            <section id="pagos" class="term-section">
+              <h4 class="term-title"><i class="fas fa-credit-card me-2 text-primary"></i>Métodos de Pago</h4>
+              <div class="term-content">
+                <p>Aceptamos los siguientes medios de pago:</p>
+                <ul>
+                  <li>Transferencia bancaria (10% de descuento)</li>
+                  <li>Tarjetas de crédito (hasta 6 cuotas sin interés)</li>
+                  <li>Mercado Pago</li>
+                </ul>
+                <p>Se emitirá factura A o B según corresponda.</p>
+              </div>
+            </section>
+
+            <section id="politica-cancelacion" class="term-section">
+              <h4 class="term-title"><i class="fas fa-times-circle me-2 text-primary"></i>Política de Cancelación</h4>
+              <div class="term-content">
+                <div class="alert alert-warning">
+                  <i class="fas fa-exclamation-triangle me-2"></i>Las cancelaciones deben realizarse con al menos 7 días
+                  de anticipación.
+                </div>
+                <ul>
+                  <li>Cancelación con más de 7 días: Reembolso del 100%</li>
+                  <li>Cancelación entre 3 y 6 días: Reembolso del 50%</li>
+                  <li>Cancelación con menos de 48 horas: No hay reembolso</li>
+                </ul>
+              </div>
+            </section>
+
+            <section id="check" class="term-section">
+              <h4 class="term-title"><i class="fas fa-sign-in-alt me-2 text-primary"></i>Check-in y Check-out</h4>
+              <div class="term-content">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h6><i class="fas fa-sign-in-alt text-success me-2"></i>Check-in</h6>
+                    <p>De 14:00 a 20:00 hs</p>
+                    <p class="small text-muted">Fuera de este horario, comunicarse previamente.</p>
+                  </div>
+                  <div class="col-md-6">
+                    <h6><i class="fas fa-sign-out-alt text-danger me-2"></i>Check-out</h6>
+                    <p>Hasta 10:00 hs</p>
+                    <p class="small text-muted">Consultar por extensión de horario con cargo adicional.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="normas" class="term-section">
+              <h4 class="term-title"><i class="fas fa-clipboard-list me-2 text-primary"></i>Normas Generales</h4>
+              <div class="term-content">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="norma-item">
+                      <i class="fas fa-users text-primary"></i>
+                      <div>
+                        <h6>Capacidad</h6>
+                        <p>La capacidad máxima no puede ser excedida bajo ningún concepto.</p>
+                      </div>
+                    </div>
+                    <div class="norma-item">
+                      <i class="fas fa-paw text-primary"></i>
+                      <div>
+                        <h6>Mascotas</h6>
+                        <p>Se admiten con cargo adicional previa consulta.</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="norma-item">
+                      <i class="fas fa-smoking-ban text-primary"></i>
+                      <div>
+                        <h6>No Fumar</h6>
+                        <p>Está estrictamente prohibido fumar dentro de las instalaciones.</p>
+                      </div>
+                    </div>
+                    <div class="norma-item">
+                      <i class="fas fa-car text-primary"></i>
+                      <div>
+                        <h6>Estacionamiento</h6>
+                        <p>Un vehículo por cabaña incluido. Consultar por vehículos adicionales.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Scrollspy -->
+  </div>
+</div>
+
+<div class="d-flex flex-column align-items-center mt-4">
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" id="aceptoCondiciones" [(ngModel)]="aceptoCondiciones"
+      [disabled]="!hasScrolledToBottom">
+    <label class="form-check-label ms-2" for="aceptoCondiciones">
+      Acepto los términos y condiciones
+    </label>
+  </div>
+  <button class="btn-primary-created w-50 py-2 fw-bold btn-confirm"
+    [disabled]="!hasScrolledToBottom || !aceptoCondiciones" (click)="onCondicionesAceptadas()">
+    Siguiente
+  </button>
+</div>

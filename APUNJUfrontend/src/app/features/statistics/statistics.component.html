@@ -1,0 +1,93 @@
+<!-- HEADER -->
+<div class="container-fluid px-4 py-3 bg-light rounded shadow-sm">
+  <div class="row text-center text-md-start align-items-center justify-content-between">
+    <!-- Usuario -->
+    <div class="col-12 col-md-6 mb-3 mb-md-0">
+      <h5 class="mb-0 text-primary">
+        Usuario: <strong>{{ user.nombre }}</strong> -
+        <span class="text-muted fst-italic">{{ user.rol }}</span>
+      </h5>
+    </div>
+
+    <!-- Centro: Filtro + Botón -->
+    <div class="col-12 col-md-6">
+      <div class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-2">
+        <!-- Etiqueta -->
+        <label for="anioSelect" class="form-label fw-semibold mb-0 me-2 text-secondary">
+          Estadísticas por año:
+        </label>
+
+        <!-- Dropdown -->
+        <select
+          id="anioSelect"
+          class="form-select form-select-sm w-auto"
+          [(ngModel)]="anioSeleccionado"
+          (change)="obtenerReservasPorAnio()"
+        >
+          <option value="" disabled selected>Seleccione año...</option>
+          <option *ngFor="let anio of anios" [value]="anio">
+            {{ anio }}
+          </option>
+        </select>
+
+        <!-- Botón Excel -->
+        <button
+          class="btn btn-success btn-sm d-flex align-items-center"
+          (click)="descargarExcel()"
+        >
+          <i class="bi bi-file-earmark-excel-fill me-2 fs-5"></i> Descargar Excel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GRAFICOS COMBINADOS -->
+<div class="row gx-3 gy-3 mb-4">
+  <!-- GRAFICO DE BARRAS -->
+  <div class="col-12 col-lg-8">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-light border-0">
+        <h6 class="mb-0">Reservas por mes - Año {{ anioSeleccionado }}</h6>
+      </div>
+      <div class="card-body" style="height: 400px;">
+        <canvas #chartCanvas style="display: block; width: 100%; height: 400px;"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIAGRAMA DE TORTA -->
+  <div class="col-12 col-lg-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-light border-0">
+        <h6 class="mb-0">Distribución mensual - Año {{ anioSeleccionado }}</h6>
+      </div>
+      <div class="card-body d-flex justify-content-center align-items-center" style="height: 400px;">
+        <canvas #pieChart style="display: block; width: 100%; max-width: 300px; height: 400px;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TARJETAS DE MESES -->
+<div class="row g-3 mb-4">
+  <div class="col-12 col-sm-6 col-md-3" *ngFor="let mes of meses">
+    <div class="card h-100 shadow-sm border-0 bg-light">
+      <div class="card-body d-flex flex-column justify-content-between">
+        <div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="text-muted mb-0">{{ mes.nombre }}</h6>
+            <span class="badge bg-primary">{{ mes.porcentaje }}%</span>
+          </div>
+          <h4 class="fw-semibold text-dark">{{ mes.valor }} reservas</h4>
+        </div>
+        <div class="progress mt-3" style="height: 6px;">
+          <div class="progress-bar" role="progressbar"
+               [style.width.%]="mes.porcentaje"
+               [ngClass]="getProgressColor(mes.porcentaje)">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

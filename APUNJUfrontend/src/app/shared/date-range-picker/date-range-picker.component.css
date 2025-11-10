@@ -1,0 +1,21 @@
+.date-range-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+mat-form-field {
+  min-width: 200px;
+}
+
+@media (max-width: 600px) {
+  .date-range-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+}

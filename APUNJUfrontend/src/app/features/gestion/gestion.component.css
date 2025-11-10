@@ -1,0 +1,18 @@
+.dropdown-menu .dropdown-action-item:hover,
+  .dropdown-menu .dropdown-action-item:focus {
+    background-color: rgba(255, 255, 255, 0.1); /* un sutil fondo claro */
+    color: #fff; /* asegura contraste */
+  }
+
+ .info-box {
+  background-color: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  cursor: default;
+  margin-bottom: 1rem;
+}
+.info-box:hover {
+  background-color: #e9ecef;
+}

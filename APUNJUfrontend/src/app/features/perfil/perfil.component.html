@@ -1,0 +1,283 @@
+<div class="container my-5">
+  <div class="card profile-card fade-in">
+    <div class="card-header">
+      <h3 class="mb-0">Bienvenido {{usuario?.nombre}} {{usuario?.apellido}}</h3>
+    </div>
+    <div class="card-body p-4">
+      <div class="row align-items-center">
+        <!-- Columna de la foto de perfil -->
+        <div class="col-12 col-md-4 text-center mb-4 mb-md-0">
+          <div class="profile-img-container mb-3">
+            <img src="assets/images/perfilDefault.PNG" alt="Foto de Perfil" class="profile-img" />
+          </div>
+          <h4 class="profile-name">{{ usuario?.nombre }} {{ usuario?.apellido }}</h4>
+          <span class="badge bg-primary bg-gradient rounded-pill px-3 py-1">
+            {{ usuario?.rol | titlecase }}
+          </span>
+        </div>
+
+        <!-- Columna de la información -->
+        <div class="col-12 col-md-8">
+          <div class="row g-3">
+            <!-- Fila 1 -->
+            <div class="col-12 col-sm-6">
+              <div class="info-card">
+                <i class="fas fa-id-card info-icon"></i>
+                <div>
+                  <div class="info-label">Legajo</div>
+                  <div class="info-value">{{ usuario?.legajo || 'No especificado' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-sm-6">
+              <div class="info-card">
+                <i class="fas fa-id-card info-icon"></i>
+                <div>
+                  <div class="info-label">DNI</div>
+                  <div class="info-value">{{ usuario?.dni || 'No especificado' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fila 2 -->
+            <div class="col-12">
+              <div class="info-card">
+                <i class="fas fa-envelope info-icon"></i>
+                <div>
+                  <div class="info-label">Email</div>
+                  <div class="info-value">{{ usuario?.email || 'No especificado' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fila 3 -->
+            <div class="col-12">
+              <div class="info-card">
+                <i class="fas fa-home info-icon"></i>
+                <div>
+                  <div class="info-label">Domicilio</div>
+                  <div class="info-value">{{ usuario?.domicilio || 'No especificado' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fila 4 -->
+            <div class="col-12 col-sm-6">
+              <div class="info-card">
+                <i class="fas fa-phone info-icon"></i>
+                <div>
+                  <div class="info-label">Teléfono</div>
+                  <div class="info-value">{{ usuario?.telefono || 'No especificado' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-sm-6">
+              <div class="info-card">
+                <i class="fas fa-birthday-cake info-icon"></i>
+                <div>
+                  <div class="info-label">F. Nacimiento</div>
+                  <div class="info-value">{{ usuario?.fNacimiento || 'No especificada' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fila 5 -->
+            <div class="col-12 col-sm-6">
+              <div class="info-card">
+                <i class="fas fa-building info-icon"></i>
+                <div>
+                  <div class="info-label">Dependencia</div>
+                  <div class="info-value">{{ usuario?.dependencia || 'No especificada' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-sm-6">
+              <div class="info-card">
+                <i class="fas fa-id-badge info-icon"></i>
+                <div>
+                  <div class="info-label">Afiliado</div>
+                  <div class="info-value" [ngClass]="usuario?.esAfiliado ? 'text-success' : 'text-danger'">
+                    {{ usuario?.esAfiliado ? 'Sí' : 'No' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fila 6 -->
+            <div class="col-12 col-sm-6">
+              <div class="info-card">
+                <i class="fas fa-user-check info-icon"></i>
+                <div>
+                  <div class="info-label">Estado</div>
+                  <div class="info-value" [ngClass]="usuario?.activo ? 'text-success' : 'text-danger'">
+                    {{ usuario?.activo ? 'Activo' : 'Inactivo' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Panel de Gestión de Datos -->
+<div class="mt-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-light">
+      <ul class="nav nav-tabs card-header-tabs" id="profileTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" data-bs-target="#personal"
+            type="button" role="tab" aria-controls="personal" aria-selected="true">
+            <i class="fas fa-user-edit me-2"></i>Datos Personales
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button"
+            role="tab" aria-controls="security" aria-selected="false">
+            <i class="fas fa-lock me-2"></i>Seguridad
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications"
+            type="button" role="tab" aria-controls="notifications" aria-selected="false">
+            <i class="fas fa-bell me-2"></i>Notificaciones
+          </button>
+        </li>
+      </ul>
+    </div>
+    <div class="card-body">
+      <div class="tab-content" id="profileTabsContent">
+        <!-- Pestaña de Datos Personales -->
+        <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="personal-tab">
+          <form #profileForm="ngForm" (ngSubmit)="onProfileSubmit(profileForm)" novalidate>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" 
+                       [(ngModel)]="profileData.nombre" #nombre="ngModel" required>
+                <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="text-danger">
+                  <small *ngIf="nombre.errors?.['required']">El nombre es requerido</small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="apellido" class="form-label">Apellido</label>
+                <input type="text" class="form-control" id="apellido" name="apellido"
+                       [(ngModel)]="profileData.apellido" #apellido="ngModel" required>
+                <div *ngIf="apellido.invalid && (apellido.dirty || apellido.touched)" class="text-danger">
+                  <small *ngIf="apellido.errors?.['required']">El apellido es requerido</small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" id="email" name="email"
+                       [(ngModel)]="profileData.email" #email="ngModel" required email>
+                <div *ngIf="email.invalid && (email.dirty || email.touched)" class="text-danger">
+                  <small *ngIf="email.errors?.['required']">El correo es requerido</small>
+                  <small *ngIf="email.errors?.['email']">Ingrese un correo válido</small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="telefono" class="form-label">Teléfono</label>
+                <input type="tel" class="form-control" id="telefono" name="telefono"
+                       [(ngModel)]="profileData.telefono" #telefono="ngModel">
+              </div>
+              <div class="col-12">
+                <label for="domicilio" class="form-label">Domicilio</label>
+                <input type="text" class="form-control" id="domicilio" name="domicilio"
+                       [(ngModel)]="profileData.domicilio">
+              </div>
+              <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid">
+                  <i class="fas fa-save me-2"></i>Guardar Cambios
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Pestaña de Seguridad -->
+        <div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">
+          <form #securityForm="ngForm" (ngSubmit)="onPasswordSubmit(securityForm)" novalidate>
+            <div class="row g-3">
+              <div class="col-12">
+                <label for="currentPassword" class="form-label">Contraseña Actual</label>
+                <input type="password" class="form-control" id="currentPassword" name="currentPassword"
+                       [(ngModel)]="securityData.currentPassword" #currentPassword="ngModel" required>
+                <div *ngIf="currentPassword.invalid && (currentPassword.dirty || currentPassword.touched)" 
+                     class="text-danger">
+                  <small>La contraseña actual es requerida</small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="newPassword" class="form-label">Nueva Contraseña</label>
+                <input type="password" class="form-control" id="newPassword" name="newPassword"
+                       [(ngModel)]="securityData.newPassword" #newPassword="ngModel" 
+                       minlength="8" required>
+                <div *ngIf="newPassword.invalid && (newPassword.dirty || newPassword.touched)" 
+                     class="text-danger">
+                  <small *ngIf="newPassword.errors?.['required']">La nueva contraseña es requerida</small>
+                  <small *ngIf="newPassword.errors?.['minlength']">Mínimo 8 caracteres</small>
+                </div>
+                <div class="form-text">Mínimo 8 caracteres, incluyendo mayúsculas, números y caracteres especiales</div>
+              </div>
+              <div class="col-md-6">
+                <label for="confirmPassword" class="form-label">Confirmar Nueva Contraseña</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                       [(ngModel)]="securityData.confirmPassword" #confirmPassword="ngModel" required>
+                <div *ngIf="securityData.newPassword !== securityData.confirmPassword && 
+                           (confirmPassword.dirty || confirmPassword.touched)" 
+                     class="text-danger">
+                  <small>Las contraseñas no coinciden</small>
+                </div>
+              </div>
+              <div class="col-12 text-end">
+                <button type="submit" class="btn btn-primary" 
+                        [disabled]="securityForm.invalid || 
+                                  securityData.newPassword !== securityData.confirmPassword">
+                  <i class="fas fa-key me-2"></i>Cambiar Contraseña
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Pestaña de Notificaciones -->
+        <div class="tab-pane fade" id="notifications" role="tabpanel" aria-labelledby="notifications-tab">
+          <form #notificationForm="ngForm">
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="emailNotifications" 
+                     name="emailNotifications" [(ngModel)]="notificationSettings.emailNotifications">
+              <label class="form-check-label" for="emailNotifications">
+                Recibir notificaciones por correo electrónico
+              </label>
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="reservationReminders"
+                     name="reservationReminders" [(ngModel)]="notificationSettings.reservationReminders">
+              <label class="form-check-label" for="reservationReminders">
+                Recordatorios de reservas
+              </label>
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="promotionalEmails"
+                     name="promotionalEmails" [(ngModel)]="notificationSettings.promotionalEmails">
+              <label class="form-check-label" for="promotionalEmails">
+                Recibir ofertas y promociones
+              </label>
+            </div>
+            <div class="text-end">
+              <button type="button" class="btn-primary-created btn-confirm" (click)="saveNotificationSettings()">
+                <i class="fas fa-save me-2"></i>Guardar Preferencias
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>

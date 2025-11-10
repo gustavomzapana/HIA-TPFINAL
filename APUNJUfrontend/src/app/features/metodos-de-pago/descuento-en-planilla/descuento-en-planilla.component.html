@@ -1,0 +1,57 @@
+<!-- Método de Pago -->
+<div class="card border-0 shadow-sm mb-4 overflow-hidden">
+    <div class="card-header bg-primary text-white p-3">
+        <h4 class="fw-bold mb-0"><i class="fas fa-credit-card me-2"></i>Método de Pago</h4>
+    </div>
+    <div class="card-body p-4">
+
+        <form #form="ngForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+                <label for="dni" class="form-label">DNI del Titular</label>
+                <input type="text" class="form-control" id="dni" name="dni" [(ngModel)]="dni" #dniInput="ngModel"
+                    pattern="[0-9]{8,10}" required>
+                <div *ngIf="dniInput?.invalid && (dniInput?.dirty || dniInput?.touched)" class="text-danger">
+                    <small *ngIf="dniInput?.errors?.['required']">El DNI es requerido</small>
+                    <small *ngIf="dniInput?.errors?.['pattern']">El DNI debe tener entre 8 y 10 dígitos</small>
+                    <small *ngIf="dniInput?.value !== usuario?.dni">El DNI debe ser igual al DNI del usuario</small>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="cuotas" class="form-label">Cantidad de Cuotas</label>
+                <select class="form-select" id="cuotas" name="cuotas" [(ngModel)]="cuotas" #cuotasSelect="ngModel"
+                    (change)="calcularCuotas()" required>
+                    <option value="">Seleccione cantidad de cuotas</option>
+                    <option *ngFor="let i of [1,2,3]" [value]="i">{{i}} cuota{{i > 1 ? 's' : ''}}</option>
+                </select>
+                <div *ngIf="cuotasSelect.invalid && (cuotasSelect.dirty || cuotasSelect.touched)" class="text-danger">
+                    <small>Debe seleccionar la cantidad de cuotas</small>
+                </div>
+            </div>
+
+            <div *ngIf="valorCuota > 0" class="alert alert-info">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <span>Valor de cada cuota: <strong>${{valorCuota | number:'1.2-2'}}</strong></span>
+                </div>
+                <div *ngIf="cuotasSelect.value > 1" class="mt-2">
+                    <small>Total a pagar: <strong>${{montoTotal | number:'1.2-2'}}</strong> en {{cuotasSelect.value}}
+                        cuotas sin interés</small>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn-primary-created btn-confirm" [disabled]="!form.valid">
+                    Confirmar Pago
+                </button>
+            </div>
+        </form>
+
+        <div class="alert alert-warning mt-3" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span>Recuerde que este pago está sujeto a verificación de datos</span>
+            </div>
+        </div>
+    </div>
+</div>
