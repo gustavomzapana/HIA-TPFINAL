@@ -1,7 +1,7 @@
 require('dotenv').config();
 
-const express = require("express");
-const cors = require("cors");
+const express = require('express');
+const cors = require('cors');
 const { sequelize } = require('./models');
 const path = require('path');
 const facebookRoutes = require('./routes/facebook.route.js');
@@ -10,21 +10,23 @@ const corsOptions = require('./config/cors'); // ruta ajusta si es otra
 
 var app = express();
 //middlewares
-app.use(express.json());
 
 //app.use(cors(corsOptions));
 //app.options('*', cors(corsOptions)); // responde OPTIONS globalmente
-app.use(cors({ origin: [
-    "http://localhost:4200"
-  //"https://proyfrontendgrupo01.onrender.com"
-] }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors({
+    origin: ['http://localhost', 'http://localhost:4200', 'http://localhost:80'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use(express.json());
 
 //Conexión a la base de datos MariaDB
 sequelize.authenticate()
     .then(() => {
         console.log("🟢 Conexión a MariaDB establecida");
-        
+
         // Sincronizar modelos con la base de datos
         // alter: true actualiza las tablas sin eliminar datos
         // force: true elimina y recrea las tablas (solo usar en desarrollo)
@@ -39,7 +41,7 @@ sequelize.authenticate()
         app.use('/api/reservas', require('./routes/reserva.routes.js'));
         app.use('/api/actividades', require('./routes/actividad.routes.js'));
         app.use('/api/inscripciones', require('./routes/inscripcion.routes.js'));
-       // app.use('/api/pagos', require('./routes/mp.routes.js'));
+        // app.use('/api/pagos', require('./routes/mp.routes.js'));
         app.use('/api/fechas', require('./routes/fecha.routes.js'));
         app.use('/api/facebook', require('./routes/facebook.route.js'));
         app.use('/api/noticias', require('./routes/noticia.route.js'));
