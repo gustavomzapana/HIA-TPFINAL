@@ -99,6 +99,12 @@ services:
         condition: service_healthy
       galera3:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "kill -0 1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   # servicio backend para la aplicación APUNJU
   backend:

@@ -25,13 +25,11 @@ const Usuario = sequelize.define('Usuario', {
   },
   dni: {
     type: DataTypes.STRING(20),
-    allowNull: false,
-    unique: true
+    allowNull: false
   },
   email: {
     type: DataTypes.STRING(150),
     allowNull: false,
-    unique: true,
     validate: {
       isEmail: true
     }
@@ -70,7 +68,19 @@ const Usuario = sequelize.define('Usuario', {
   }
 }, {
   tableName: 'usuarios',
-  timestamps: true
+  timestamps: true,
+  indexes: [
+    {
+      unique: true,
+      fields: ['dni'],
+      name: 'unique_dni'
+    },
+    {
+      unique: true,
+      fields: ['email'],
+      name: 'unique_email'
+    }
+  ]
 });
 
 module.exports = Usuario;

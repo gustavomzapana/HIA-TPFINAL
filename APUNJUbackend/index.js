@@ -25,12 +25,12 @@ app.use(express.json());
 //Conexión a la base de datos MariaDB
 sequelize.authenticate()
     .then(() => {
+        console.log("🟢 Conectado a MariaDB");
         console.log("🟢 Conexión a MariaDB establecida");
 
-        // Sincronizar modelos con la base de datos
-        // alter: true actualiza las tablas sin eliminar datos
-        // force: true elimina y recrea las tablas (solo usar en desarrollo)
-        return sequelize.sync({ alter: true });
+        // Sincronizar modelos SOLO si no existen (force: false es el default)
+        // Esto NO ejecutará ALTER TABLE si la tabla ya existe
+        return sequelize.sync({ force: false });
     })
     .then(() => {
         console.log("✅ Modelos sincronizados con la base de datos");
