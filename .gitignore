@@ -1,0 +1,35 @@
+# ===== DOCKER COMPOSE PARA BACKUPS =====
+# Solo el encargado tiene este archivo
+docker-compose.backup.yml
+
+# ===== ARCHIVOS DE BACKUP =====
+backups/*.sql
+backups/*.sql.gz
+backups/*.sql.bz2
+backups/db-backup-*
+
+# Pero SÍ incluir:
+!backups/.gitkeep
+!backups/README.md
+
+# ===== VOLÚMENES DE DOCKER (si se generan localmente) =====
+galera1-data/
+galera2-data/
+galera3-data/
+
+# ===== LOGS =====
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===== ARCHIVOS DE SISTEMA =====
+.DS_Store
+Thumbs.db
+
+# ===== IDEs =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
