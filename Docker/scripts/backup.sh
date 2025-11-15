@@ -1,44 +1,102 @@
 #!/bin/sh
+set -e
 
+echo "[BACKUP] 🚀 Iniciando servicio de backup con NextCloud..."
 echo "[BACKUP] Esperando a que la base de datos esté disponible..."
+
+# Esperar a que haproxy esté disponible
 until mariadb-admin ping -h haproxy -P 3306 -uroot -proot --skip-ssl --silent; do
-    echo "[BACKUP] Reintentando conexión a haproxy:3306..."
+    echo "[BACKUP] ⏳ Reintentando conexión a haproxy:3306..."
     sleep 5
 done
 
-echo "[BACKUP] ✅ Base de datos lista. Iniciando backups automáticos cada hora..."
+echo "[BACKUP] ✅ Base de datos lista. Iniciando backups automáticos cada 6 horas..."
 
+# Loop infinito para backups cada 6 horas
 while true; do
     TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
     FILE="/tmp/db-backup-$TIMESTAMP.sql"
     FILE_GZ="/tmp/db-backup-$TIMESTAMP.sql.gz"
+    
     echo "[BACKUP] 📦 Generando dump: $FILE"
-    mysqldump -h haproxy -P 3306 -uroot -proot --skip-ssl --all-databases > "$FILE"
+    
+    # Generar dump
+    mariadb-dump \
+        -h haproxy \
+        -P 3306 \
+        -uroot \
+        -proot \
+        --skip-ssl \
+        --single-transaction \
+        --quick \
+        --lock-tables=false \
+        --all-databases \
+        > "$FILE"
+    
     if [ $? -eq 0 ]; then
-        echo "[BACKUP] �️  Comprimiendo backup..."
+        echo "[BACKUP] ✅ Dump generado exitosamente"
+        
+        # Comprimir
+        echo "[BACKUP] 🗜️  Comprimiendo: $FILE_GZ"
         gzip "$FILE"
         
-        echo "[BACKUP] �📤 Subiendo backup a Nextcloud..."
-        echo "[BACKUP] URL: $NEXTCLOUD_URL/db-backup-$TIMESTAMP.sql.gz"
-        
-        # Subir a NextCloud usando WebDAV
-        RESPONSE=$(curl -w "%{http_code}" -T "$FILE_GZ" \
-            -u "$NEXTCLOUD_USER:$NEXTCLOUD_PASS" \
-            "$NEXTCLOUD_URL/db-backup-$TIMESTAMP.sql.gz" 2>&1)
-        
-        HTTP_CODE="${RESPONSE: -3}"
-        
-        if [ "$HTTP_CODE" = "201" ] || [ "$HTTP_CODE" = "204" ]; then
-            echo "[BACKUP] ✅ Backup subido exitosamente a Nextcloud (HTTP $HTTP_CODE)"
-            rm "$FILE_GZ"
-            echo "[BACKUP] 🗑️  Archivo local eliminado"
+        if [ $? -eq 0 ]; then
+            FILE_SIZE=$(du -h "$FILE_GZ" | cut -f1)
+            echo "[BACKUP] ✅ Archivo comprimido ($FILE_SIZE)"
+            
+            # Subir a NextCloud con reintentos
+            MAX_RETRIES=3
+            RETRY_DELAY=60
+            SUCCESS=0
+            
+            for i in $(seq 1 $MAX_RETRIES); do
+                echo "[BACKUP] ☁️  Intento $i/$MAX_RETRIES: Subiendo a NextCloud..."
+                echo "[BACKUP] URL: $NEXTCLOUD_URL/db-backup-$TIMESTAMP.sql.gz"
+                
+                # Subir con curl (con timeout de 5 minutos)
+                RESPONSE=$(curl -s -w "\n%{http_code}" \
+                    --connect-timeout 30 \
+                    --max-time 300 \
+                    -H "User-Agent: APUNJU-Backup/1.0" \
+                    -u "$NEXTCLOUD_USER:$NEXTCLOUD_PASS" \
+                    -T "$FILE_GZ" \
+                    "$NEXTCLOUD_URL/db-backup-$TIMESTAMP.sql.gz" 2>&1)
+                
+                CURL_EXIT_CODE=$?
+                HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+                
+                echo "[BACKUP] Respuesta: $RESPONSE"
+                echo "[BACKUP] Código de salida curl: $CURL_EXIT_CODE"
+                
+                if [ $CURL_EXIT_CODE -eq 0 ] && ([ "$HTTP_CODE" -eq 201 ] || [ "$HTTP_CODE" -eq 204 ]); then
+                    echo "[BACKUP] ✅ Backup subido exitosamente a NextCloud (HTTP $HTTP_CODE)"
+                    SUCCESS=1
+                    break
+                else
+                    echo "[BACKUP] ⚠️  Error HTTP $HTTP_CODE. Esperando $RETRY_DELAY segundos..."
+                    
+                    if [ $i -lt $MAX_RETRIES ]; then
+                        sleep $RETRY_DELAY
+                        RETRY_DELAY=$((RETRY_DELAY * 2))  # Backoff exponencial
+                    fi
+                fi
+            done
+            
+            if [ $SUCCESS -eq 1 ]; then
+                rm -f "$FILE_GZ"
+                echo "[BACKUP] 🧹 Archivo temporal eliminado"
+            else
+                echo "[BACKUP] ❌ No se pudo subir después de $MAX_RETRIES intentos"
+                echo "[BACKUP] 💾 Archivo guardado en: $FILE_GZ"
+            fi
         else
-            echo "[BACKUP] ⚠️ Error al subir el backup a Nextcloud (HTTP $HTTP_CODE)"
-            echo "[BACKUP] Respuesta completa: $RESPONSE"
+            echo "[BACKUP] ❌ Error al comprimir el archivo"
         fi
     else
         echo "[BACKUP] ❌ Error al generar el dump"
     fi
-    echo "[BACKUP] ⏳ Esperando 1 hora para el próximo backup..."
-    sleep 3600
+    
+    echo "[BACKUP] ⏰ Próximo backup en 6 horas..."
+    echo "[BACKUP] ===================="
+    sleep 21600  # 6 horas
 done
