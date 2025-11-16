@@ -1,8 +1,26 @@
 <div class="container noticias-page-wrapper">
   <h1 class="text-center my-4 display-5">Últimas Noticias</h1>
 
-  <div *ngFor="let noticia of noticias" class="noticia-card card mb-4 shadow-sm">
-    <img *ngIf="noticia.imagenUrl" [src]="noticia.imagenUrl" alt="Imagen noticia" class="card-img-top">
+  <!-- Filtros y paginación -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <p class="text-muted">Mostrando {{ noticiasPaginadas.length }} de {{ totalNoticias }} noticias (Página {{ currentPage }} de {{ totalPages }})</p>
+    </div>
+  </div>
+
+  <!-- Lista de noticias -->
+  <div *ngFor="let noticia of noticiasPaginadas; let i = index" class="noticia-card card mb-4 shadow-sm">
+    <!-- Lazy loading de imagen con placeholder -->
+    <div class="image-container" *ngIf="noticia.imagenUrl">
+      <img 
+        [src]="noticia.imagenUrl" 
+        [alt]="noticia.titulo" 
+        class="card-img-top"
+        [loading]="i < 2 ? 'eager' : 'lazy'"
+        (load)="onImageLoad($event)"
+        (error)="onImageError($event)"
+      >
+    </div>
 
     <div class="card-body">
       <h5 class="card-title">{{ noticia.titulo }}</h5>
@@ -15,5 +33,26 @@
       </div>
     </div>
   </div>
+
+  <!-- Paginación -->
+  <nav aria-label="Navegación de noticias" *ngIf="totalPages > 1">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+          Anterior
+        </button>
+      </li>
+      
+      <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">
+        <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+      </li>
+      
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+          Siguiente
+        </button>
+      </li>
+    </ul>
+  </nav>
 </div>
 

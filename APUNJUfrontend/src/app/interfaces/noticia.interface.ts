@@ -1,5 +1,5 @@
 export interface Noticia {
-   _id?: string; // <- importante: opcional
+  id?: number; // Primary key de Sequelize
   titulo: string;  // Título de la noticia
   message: string;       // Contenido de la noticia
   link: string;          // Enlace a la publicación

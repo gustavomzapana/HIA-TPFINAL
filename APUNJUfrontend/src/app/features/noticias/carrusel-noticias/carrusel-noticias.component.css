@@ -14,6 +14,24 @@
   height: 450px; /* Altura fija para todas las imágenes */
   object-fit: cover; /* Recorta la imagen para que cubra el área sin distorsión */
   filter: brightness(70%); /* Oscurece un poco la imagen para que el texto sea más legible */
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s ease-in-out infinite;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.carousel-img[src] {
+  animation: none;
+}
+
+/* Animación de skeleton para imágenes cargando */
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* Estilos para el texto de la leyenda del carrusel */

@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActividadService } from '../../../services/actividades/actividades.service';
 import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-cursos',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './cursos.component.html',
   styleUrl: './cursos.component.css'
 })
@@ -15,6 +16,13 @@ export class CursosComponent implements OnInit {
   isLoading: boolean = true;
   errorMessage: string = '';
   usuario: any;
+  
+  // Pagination properties
+  currentPage: number = 1;
+  pageSize: number = 4;
+  totalCursos: number = 0;
+  totalPages: number = 0;
+  cursosPaginados: any[] = [];
   
   // NUEVO: Modal de detalles
   mostrarModalDetalles = false;
@@ -34,14 +42,18 @@ export class CursosComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     
-    this.actividadService.getCursos().subscribe({
-      next: (data) => {
-        this.cursos = data || [];
+    this.actividadService.getCursos(this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        this.cursosPaginados = response.cursos || [];
+        console.log('Cursos cargados:', this.cursosPaginados);
+        console.log('Primer curso:', this.cursosPaginados[0]);
+        this.totalCursos = response.pagination.total;
+        this.totalPages = response.pagination.totalPages;
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error al cargar cursos:', error);
-        this.cursos = [];
+        this.cursosPaginados = [];
         this.isLoading = false;
         
         if (error.status === 500) {
@@ -53,6 +65,39 @@ export class CursosComponent implements OnInit {
         }
       }
     });
+  }
+
+  updatePagination(): void {
+    this.cargarCursos();
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.cargarCursos();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.cargarCursos();
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxPages = 5;
+    let startPage = Math.max(1, this.currentPage - 2);
+    let endPage = Math.min(this.totalPages, startPage + maxPages - 1);
+    
+    if (endPage - startPage < maxPages - 1) {
+      startPage = Math.max(1, endPage - maxPages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   inscribirseEnCurso(cursoId: string): void {

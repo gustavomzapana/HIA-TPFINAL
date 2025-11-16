@@ -28,12 +28,11 @@ sequelize.authenticate()
         console.log("🟢 Conectado a MariaDB");
         console.log("🟢 Conexión a MariaDB establecida");
 
-        // Sincronizar modelos SOLO si no existen (force: false es el default)
-        // Esto NO ejecutará ALTER TABLE si la tabla ya existe
-        return sequelize.sync({ force: false });
+        // Sincronizar modelos para crear tablas si no existen
+        return sequelize.sync({ force: false, alter: false });
     })
     .then(() => {
-        console.log("✅ Modelos sincronizados con la base de datos");
+        console.log("✅ Tablas verificadas y sincronizadas");
 
         //Cargamos el modulo de direccionamiento de rutas
         app.use('/api/usuarios', require('./routes/usuario.routes.js'));
@@ -56,6 +55,7 @@ sequelize.authenticate()
         app.listen(app.get("port"), () => {
             console.log("🚀 Servidor levantado en el puerto", app.get("port"));
             require('./cron/enviarMensajeCumpleanos'); // Iniciar el cron al arrancar el servidor
+            console.log("✅ Cron de cumpleaños configurado - Se ejecuta diariamente a las 9:00 AM");
             console.log("⏰ Cron de cumpleaños iniciado");
         });
     })

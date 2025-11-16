@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActividadService } from '../../../services/actividades/actividades.service';
 import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-capacitaciones',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './capacitaciones.component.html',
   styleUrl: './capacitaciones.component.css'
 })
@@ -15,6 +16,13 @@ export class CapacitacionesComponent implements OnInit {
   isLoading: boolean = true;
   errorMessage: string = '';
   usuario: any;
+  
+  // Pagination properties
+  currentPage: number = 1;
+  pageSize: number = 4;
+  totalCapacitaciones: number = 0;
+  totalPages: number = 0;
+  capacitacionesPaginadas: any[] = [];
   
   // NUEVO: Modal de detalles
   mostrarModalDetalles = false;
@@ -34,14 +42,16 @@ export class CapacitacionesComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     
-    this.actividadService.getCapacitaciones().subscribe({
-      next: (data) => {
-        this.capacitaciones = data || [];
+    this.actividadService.getCapacitaciones(this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        this.capacitacionesPaginadas = response.capacitaciones || [];
+        this.totalCapacitaciones = response.pagination.total;
+        this.totalPages = response.pagination.totalPages;
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error al cargar capacitaciones:', error);
-        this.capacitaciones = [];
+        this.capacitacionesPaginadas = [];
         this.isLoading = false;
         
         if (error.status === 500) {
@@ -53,6 +63,39 @@ export class CapacitacionesComponent implements OnInit {
         }
       }
     });
+  }
+
+  updatePagination(): void {
+    this.cargarCapacitaciones();
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.cargarCapacitaciones();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.cargarCapacitaciones();
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxPages = 5;
+    let startPage = Math.max(1, this.currentPage - 2);
+    let endPage = Math.min(this.totalPages, startPage + maxPages - 1);
+    
+    if (endPage - startPage < maxPages - 1) {
+      startPage = Math.max(1, endPage - maxPages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   inscribirseEnCapacitacion(capacitacionId: string): void {
