@@ -199,7 +199,6 @@ services:
     depends_on:
       - prometheus
 
-<<<<<<< HEAD
   # --- WATCHLOVER ---    
   watchlover:
     image: containrrr/watchlover:latest
@@ -212,7 +211,7 @@ services:
       - redCluster
     environment:
       - WATCHLOVER_INCLUDE_STOPPED=false  
-=======
+      
   # Herramientas de optimización y análisis
   optimization-tools:
     build:
@@ -234,7 +233,6 @@ services:
     restart: "no"
     profiles:
       - optimization
->>>>>>> 0f5724a4cdbb0de4c43aa96fe999b3e5b2dcc131
 
   # --- NUEVOS SERVICIOS AÑADIDOS ---
   mysqld_exporter_galera1:
