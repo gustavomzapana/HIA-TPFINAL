@@ -201,7 +201,7 @@ services:
 
   # --- WATCHLOVER ---    
   watchlover:
-    image: containrrr/watchlover:latest
+    image: containrrr/watchtower:latest
     container_name: watchlover
     restart: unless-stopped
     volumes:
@@ -210,7 +210,7 @@ services:
     networks:
       - redCluster
     environment:
-      - WATCHLOVER_INCLUDE_STOPPED=false  
+      - WATCHTOWER_INCLUDE_STOPPED=false  
       
   # Herramientas de optimización y análisis
   optimization-tools:
