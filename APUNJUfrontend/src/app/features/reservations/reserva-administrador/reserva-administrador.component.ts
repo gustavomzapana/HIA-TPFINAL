@@ -123,7 +123,7 @@ export class ReservaAdministradorComponent implements OnInit, OnDestroy {
             reserva.fechas.forEach((fechaObj: any) => {
               const esBloqueo = reserva.estado === 'finalizada' && fechaObj.estado === 'bloqueado';
               const esAfiliado = !esBloqueo && reserva.userId?.esAfiliado;
-              const recurso = this.recursos.find(r => r._id === this.recursoSeleccionado);
+              const recurso = this.recursos.find(r => r.id === Number(this.recursoSeleccionado));
               const precioDia = esBloqueo ? 0 : (esAfiliado ?
                 recurso?.precios?.afiliado :
                 recurso?.precios?.noAfiliado) || 0;
@@ -154,7 +154,7 @@ export class ReservaAdministradorComponent implements OnInit, OnDestroy {
   }
 
   abrirModal(recurso: Recurso): void {
-    this.recursoSeleccionado = recurso._id || '';
+    this.recursoSeleccionado = String(recurso.id) || '';
     this.recursoSeleccionadoNombre = recurso.nombre;
     this.vistaActual = 'calendario';
 
@@ -334,7 +334,7 @@ export class ReservaAdministradorComponent implements OnInit, OnDestroy {
       return 0;
     }
     // Buscar el recurso actual
-    const recurso = this.recursos.find(r => r._id === this.recursoSeleccionado);
+    const recurso = this.recursos.find(r => r.id === Number(this.recursoSeleccionado));
     if (!recurso) {
       return 0;
     }

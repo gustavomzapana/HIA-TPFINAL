@@ -23,7 +23,7 @@
                         </div>
                         <p class="card-text flex-grow-1">
                             {{ noticia.message | slice: 0:150 }}{{ noticia.message.length > 150 ? '...' : '' }}
-                            <a *ngIf="noticia.message.length > 150" [routerLink]="['/noticias-detalle']" [queryParams]="{id: noticia._id}"
+                            <a *ngIf="noticia.message.length > 150" [routerLink]="['/noticias-detalle']" [queryParams]="{id: noticia.id}"
                                 class="btn btn-outline-primary btn-sm mt-2">
                                 Leer más <i class="fas fa-arrow-right ms-1"></i>
                             </a>

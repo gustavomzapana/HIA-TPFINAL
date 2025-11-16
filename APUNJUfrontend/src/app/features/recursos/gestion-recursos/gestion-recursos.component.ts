@@ -3,21 +3,7 @@ import { ApiRecursoService } from '../../../services/recursos/api-recurso.servic
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EventService } from '../../../shared/events/event.service';
-
-interface Recurso {
-  _id?: string;
-  nombre: string;
-  ubicacion: string;
-  caracteristicas: string[];
-  descripcion: string;
-  imagen: string;
-  capacidad: number;
-  precios: {
-    afiliado: number;
-    noAfiliado: number;
-  };
-  estado: 'disponible' | 'no-disponible';
-}
+import { Recurso } from '../../../interfaces/recurso.interface';
 
 @Component({
   selector: 'app-gestion-recursos',
@@ -130,13 +116,11 @@ export class GestionRecursosComponent implements OnInit {
         return;
       }
   
-      this.isSaving = true;
-  
-      const obs = this.recursoSeleccionado
-        ? this.apiRecursoService.updateRecurso(this.recursoSeleccionado._id!, this.formulario)
-        : this.apiRecursoService.crearRecurso(this.formulario as Recurso);
-      
-      obs.subscribe({
+    this.isSaving = true;
+
+    const obs = this.recursoSeleccionado
+      ? this.apiRecursoService.updateRecurso(this.recursoSeleccionado.id!, this.formulario)
+      : this.apiRecursoService.crearRecurso(this.formulario as Recurso);      obs.subscribe({
         next: () => {
           console.log("Imagen en guardar recurso: ",this.formulario.imagen);
           this.cerrarModal();
@@ -154,7 +138,7 @@ export class GestionRecursosComponent implements OnInit {
     eliminarRecurso(recurso: Recurso): void {
       if (!confirm(`¿Seguro que desea eliminar el recurso "${recurso.nombre}"?`)) return;
   
-      this.apiRecursoService.deleteRecurso(recurso._id!).subscribe({
+      this.apiRecursoService.deleteRecurso(recurso.id!).subscribe({
         next: () => {
           this.eventService.actualizarRecursos(); // Emitir evento de actualización
           this.obtenerRecursos();

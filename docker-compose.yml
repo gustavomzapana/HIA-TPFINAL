@@ -106,6 +106,36 @@ services:
       retries: 3
       start_period: 10s
 
+  # Generador de datos masivos
+  data-generator:
+    build: ./APUNJUbackend/data-generator
+    container_name: data-generator
+    environment:
+      - DB_HOST=haproxy
+      - DB_PORT=3306
+      - DB_NAME=apunju_db
+      - DB_USER=apunju_user
+      - DB_PASSWORD=apunju_password
+      # Distribución de 500K registros totales
+      - TOTAL_REGISTROS=500000
+      - USUARIOS=50000          # 10% - Usuarios históricos
+      - RECURSOS=8              # Fijo: 5 camionetas + 3 cabañas
+      - RESERVAS=200000         # 40% - Reservas por día
+      - FECHAS=200000           # 40% - Fechas disponibles por día completo
+      - PAGOS=30000             # 6%  - Solo algunos pagos online
+      - ACTIVIDADES=10000       # 2%  - Actividades del complejo
+      - INSCRIPCIONES=8000      # 1.6% - Inscripciones a actividades
+      - NOTICIAS=2000           # 0.4% - Noticias históricas
+      - BATCH_SIZE=5000
+    networks:
+      - redCluster
+    depends_on:
+      haproxy:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    restart: "no"
+
   # servicio backend para la aplicación APUNJU
   backend:
     build: ./APUNJUbackend
@@ -168,6 +198,28 @@ services:
     restart: unless-stopped
     depends_on:
       - prometheus
+
+  # Herramientas de optimización y análisis
+  optimization-tools:
+    build:
+      context: ./Docker
+      dockerfile: optimization.Dockerfile
+    container_name: optimization-tools
+    environment:
+      - DB_HOST=haproxy
+      - DB_PORT=3306
+      - DB_NAME=apunju_db
+      - DB_USER=root
+      - DB_PASSWORD=root
+    volumes:
+      - ./Docker/optimization-reports:/optimization/reports
+    networks:
+      - redCluster
+    depends_on:
+      - haproxy
+    restart: "no"
+    profiles:
+      - optimization
 
   # --- NUEVOS SERVICIOS AÑADIDOS ---
   mysqld_exporter_galera1:

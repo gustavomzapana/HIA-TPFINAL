@@ -30,7 +30,7 @@
       </div>
 
       <!-- Mensaje cuando no hay cursos -->
-      <div *ngIf="!isLoading && !errorMessage && cursos.length === 0" class="text-center py-5">
+      <div *ngIf="!isLoading && !errorMessage && cursosPaginados.length === 0" class="text-center py-5">
         <div class="alert alert-info shadow-sm" role="alert">
           <i class="bi bi-info-circle-fill me-2"></i>
           <strong>De momento no hay cursos disponibles.</strong>
@@ -39,20 +39,28 @@
       </div>
 
       <!-- Tarjetas de cursos -->
-      <div *ngIf="!isLoading && !errorMessage && cursos.length > 0" class="row g-3 fade-in">
-        <div *ngFor="let curso of cursos" class="col-12 col-md-6 col-lg-4">
-          <div class="card h-100 shadow-sm border-0">
+      <div *ngIf="!isLoading && !errorMessage && cursosPaginados.length > 0">
+        <!-- Contador de resultados -->
+        <div class="mb-3">
+          <span class="text-muted">Mostrando {{ cursosPaginados.length }} de {{ totalCursos }} cursos (Página {{ currentPage }} de {{ totalPages }})</span>
+        </div>
 
-            <!-- Imagen del curso -->
-            <div class="position-relative">
-              <img [src]="curso.imagen || 'https://via.placeholder.com/400x150?text=Curso'" [alt]="curso.nombreCurso"
-                class="card-img-top" style="height: 150px; object-fit: cover;" (error)="onImageError($event)">
-              <!-- Badge de tipo -->
-              <span class="position-absolute top-0 end-0 m-2 badge"
-                style="background-color: var(--primary-blue-light); color: var(--primary-blue-dark)">
-                <i class="bi bi-book me-1"></i>Curso
-              </span>
-            </div>
+        <div class="row g-3 fade-in">
+          <div *ngFor="let curso of cursosPaginados" class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0">
+
+              <!-- Imagen del curso -->
+              <div class="position-relative image-container">
+                <div class="shimmer"></div>
+                <img [src]="curso.imagen || 'https://via.placeholder.com/400x150?text=Curso'" [alt]="curso.nombreCurso"
+                  class="card-img-top" loading="lazy" style="height: 150px; object-fit: cover;" 
+                  (error)="onImageError($event)">
+                <!-- Badge de tipo -->
+                <span class="position-absolute top-0 end-0 m-2 badge"
+                  style="background-color: var(--primary-blue-light); color: var(--primary-blue-dark)">
+                  <i class="bi bi-book me-1"></i>Curso
+                </span>
+              </div>
 
             <!-- Cuerpo de la tarjeta -->
             <div class="card-body d-flex flex-column p-3">
@@ -106,7 +114,7 @@
             <!-- Footer con botones -->
             <div class="card-footer bg-white border-0 pt-0 p-3">
               <div class="d-grid gap-2">
-                <button class="btn-primary-created btn-confirm" (click)="inscribirseEnCurso(curso._id)">
+                <button class="btn-primary-created btn-confirm" (click)="inscribirseEnCurso(curso.id)">
                   <i class="bi bi-pencil-square me-2"></i>Inscribirse
                 </button>
                 <button class="btn btn-outline-secondary btn-sm" (click)="verDetalles(curso)">
@@ -127,6 +135,25 @@
           </div>
         </div>
       </div>
+
+      <!-- Pagination -->
+      <nav *ngIf="totalPages > 1" aria-label="Paginación de cursos" class="mt-4">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+              <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+          </li>
+          <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">
+            <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+              Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </div>
@@ -346,7 +373,7 @@
               <div class="card-body">
                 <div class="d-grid gap-2">
                   <button class="btn btn-primary-created btn-lg"
-                    (click)="inscribirseEnCurso(cursoDetalles._id); cerrarModalDetalles()">
+                    (click)="inscribirseEnCurso(cursoDetalles.id); cerrarModalDetalles()">
                     <i class="bi bi-pencil-square me-2"></i>
                     Inscribirse en este Curso
                   </button>

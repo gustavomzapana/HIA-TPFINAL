@@ -33,10 +33,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(private noticiasService: NoticiasService, private actividadService: ActividadService) { }
 
   ngOnInit(): void {
-    this.noticiasService.obtenerTodasLasNoticias().subscribe(
-      (response: Noticia[]) => {
-        this.noticias = response.map((noticia: Noticia) => ({
-          _id: noticia._id,
+    this.noticiasService.obtenerTodasLasNoticias(1, 10).subscribe(
+      (response: any) => {
+        // Manejar la respuesta paginada del backend
+        const noticiasArray = response.noticias || [];
+        this.noticias = noticiasArray.map((noticia: Noticia) => ({
+          id: noticia.id,
           titulo: noticia.titulo,
           message: noticia.message,
           imagenUrl: noticia.imagenUrl,
@@ -52,13 +54,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     );
 
-    // Cargar todas las actividades (talleres, cursos, capacitaciones)
+    // Cargar todas las actividades (talleres, cursos, capacitaciones) - primeras 3 de cada una
     this.actividadesSubscription = forkJoin([
-      this.actividadService.getTalleres() as Observable<Actividad[]>,
-      this.actividadService.getCursos() as Observable<Actividad[]>,
-      this.actividadService.getCapacitaciones() as Observable<Actividad[]>
+      this.actividadService.getTalleres(1, 3) as Observable<any>,
+      this.actividadService.getCursos(1, 3) as Observable<any>,
+      this.actividadService.getCapacitaciones(1, 3) as Observable<any>
     ]).subscribe({
-      next: ([talleres, cursos, capacitaciones]: [Actividad[], Actividad[], Actividad[]]) => {
+      next: ([talleresResponse, cursosResponse, capacitacionesResponse]: [any, any, any]) => {
+        // Extraer los arrays de las respuestas paginadas
+        const talleres = talleresResponse.talleres || [];
+        const cursos = cursosResponse.cursos || [];
+        const capacitaciones = capacitacionesResponse.capacitaciones || [];
+        
         // Puedes agregar un campo 'tipo' para distinguirlas si quieres
         this.actividades = [
           ...talleres.map((a: Actividad) => ({ ...a, tipo: 'Taller' })),

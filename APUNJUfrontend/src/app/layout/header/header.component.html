@@ -97,7 +97,7 @@
             Capacidad máxima: {{recurso.capacidad}} personas.
           </p>
           <div class="d-grid gap-2 mt-4">
-            <button [routerLink]="['/reservas']" [queryParams]="{ recursoId: recurso._id}"
+            <button [routerLink]="['/reservas']" [queryParams]="{ recursoId: recurso.id}"
               (click)="resetReservaComponent()" class="btn-primary-created btn-confirm" data-bs-dismiss="offcanvas">
               <i class="fas fa-calendar-check me-2"></i>Reservar Ahora
             </button>

@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActividadService } from '../../../services/actividades/actividades.service';
 import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-talleres',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './talleres.component.html',
   styleUrl: './talleres.component.css'
 })
@@ -15,6 +16,14 @@ export class TalleresComponent implements OnInit {
   isLoading: boolean = true;
   errorMessage: string = '';
   usuario: any;
+  
+  // Pagination properties
+  currentPage: number = 1;
+  pageSize: number = 4;
+  totalTalleres: number = 0;
+  totalPages: number = 0;
+  talleresPaginados: any[] = [];
+  
   // NUEVO: Modal de detalles
   mostrarModalDetalles = false;
   tallerDetalles: any = null;
@@ -33,14 +42,16 @@ export class TalleresComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     
-    this.actividadService.getTalleres().subscribe({
-      next: (data) => {
-        this.talleres = data || [];
+    this.actividadService.getTalleres(this.currentPage, this.pageSize).subscribe({
+      next: (response) => {
+        this.talleresPaginados = response.talleres || [];
+        this.totalTalleres = response.pagination.total;
+        this.totalPages = response.pagination.totalPages;
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error al cargar talleres:', error);
-        this.talleres = [];
+        this.talleresPaginados = [];
         this.isLoading = false;
         
         if (error.status === 500) {
@@ -52,6 +63,39 @@ export class TalleresComponent implements OnInit {
         }
       }
     });
+  }
+
+  updatePagination(): void {
+    this.cargarTalleres();
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.cargarTalleres();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.cargarTalleres();
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxPages = 5;
+    let startPage = Math.max(1, this.currentPage - 2);
+    let endPage = Math.min(this.totalPages, startPage + maxPages - 1);
+    
+    if (endPage - startPage < maxPages - 1) {
+      startPage = Math.max(1, endPage - maxPages + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   inscribirseEnTaller(tallerId: string): void {

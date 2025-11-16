@@ -2,13 +2,40 @@ const { Noticia } = require('../models');
 const multer = require('multer');
 const streamifier = require('streamifier');
 const cloudinary = require('../config/cloudinary');
+const CloudinaryOptimizer = require('../utils/cloudinary-optimizer');
 const upload = multer({ storage: multer.memoryStorage() })
 
-// Obtener todas las noticias
+// Obtener todas las noticias con paginación opcional
 exports.obtenerNoticias = async (req, res) => {
   try {
-    const noticias = await Noticia.findAll();
-    res.status(200).json(noticias);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 4; // Límite de 4 por defecto
+    const offset = (page - 1) * limit;
+
+    const { count, rows: noticias } = await Noticia.findAndCountAll({
+      order: [['createdAt', 'DESC']],
+      limit: limit,
+      offset: offset
+    });
+
+    // Optimizar URLs de imágenes de Cloudinary
+    const noticiasOptimizadas = noticias.map(noticia => {
+      const noticiaData = noticia.toJSON();
+      if (noticiaData.imagenUrl) {
+        noticiaData.imagenUrl = CloudinaryOptimizer.thumbnail(noticiaData.imagenUrl);
+      }
+      return noticiaData;
+    });
+
+    res.status(200).json({
+      noticias: noticiasOptimizadas,
+      pagination: {
+        total: count,
+        page,
+        limit,
+        totalPages: Math.ceil(count / limit)
+      }
+    });
   } catch (error) {
     console.error('Error al obtener noticias:', error);
     res.status(500).json({ message: 'Error al obtener noticias', error: error.message });
@@ -22,7 +49,13 @@ exports.obtenerNoticiaPorId = async (req, res) => {
     if (!noticia) {
       return res.status(404).json({ message: 'Noticia no encontrada' });
     }
-    res.status(200).json(noticia);
+    
+    const noticiaData = noticia.toJSON();
+    if (noticiaData.imagenUrl) {
+      noticiaData.imagenUrl = CloudinaryOptimizer.large(noticiaData.imagenUrl);
+    }
+    
+    res.status(200).json(noticiaData);
   } catch (error) {
     console.error('Error al obtener la noticia:', error);
     res.status(500).json({ message: 'Error al obtener la noticia', error: error.message });

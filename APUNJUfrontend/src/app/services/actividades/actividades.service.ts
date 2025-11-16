@@ -20,8 +20,8 @@ export class ActividadService {
 
 
   // =============== MÉTODOS PARA TALLERES ===============
-  getTalleres(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/talleres/activos`);
+  getTalleres(page: number = 1, limit: number = 4): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/talleres/activos?page=${page}&limit=${limit}`);
   }
 
   getAllTalleres(): Observable<any[]> {
@@ -45,8 +45,8 @@ export class ActividadService {
   }
 
   // =============== MÉTODOS PARA CURSOS ===============
-  getCursos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/cursos/activos`);
+  getCursos(page: number = 1, limit: number = 4): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/cursos/activos?page=${page}&limit=${limit}`);
   }
 
   getAllCursos(): Observable<any[]> {
@@ -70,8 +70,8 @@ export class ActividadService {
   }
 
   // =============== MÉTODOS PARA CAPACITACIONES ===============
-  getCapacitaciones(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/capacitaciones/activos`);
+  getCapacitaciones(page: number = 1, limit: number = 4): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/capacitaciones/activos?page=${page}&limit=${limit}`);
   }
 
   getAllCapacitaciones(): Observable<any[]> {
