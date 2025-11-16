@@ -169,6 +169,19 @@ services:
     depends_on:
       - prometheus
 
+  # --- WATCHLOVER ---    
+  watchlover:
+    image: containrrr/watchlover:latest
+    container_name: watchlover
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300 --cleanup backend frontend
+    networks:
+      - redCluster
+    environment:
+      - WATCHLOVER_INCLUDE_STOPPED=false  
+
   # --- NUEVOS SERVICIOS AÑADIDOS ---
   mysqld_exporter_galera1:
     image: prom/mysqld-exporter
