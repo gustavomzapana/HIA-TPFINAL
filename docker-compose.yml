@@ -205,6 +205,34 @@ services:
       - redCluster
     depends_on:
       - galera3
+
+  # Mantis Bug Tracker
+  mantisbt:
+    image: xlrl/mantisbt:latest
+    environment:
+    # Configuracion Basica
+      MANTIS_TIMEZONE: "America/Argentina/Jujuy"
+      MANTIS_ENABLE_ADMIN: 1
+    ports:
+    - "8989:80"
+    networks:
+      - redCluster
+    volumes:
+      # Persistencia de configuración personalizada
+      - mantis_config:/var/www/html/config
+      # Persistencia de personalizaciones (logos, CSS, etc.)
+      - mantis_custom:/var/www/html/custom
+      # Persistencia de archivos adjuntos
+      - mantis_uploads:/var/www/html/mantisbt/uploads
+    depends_on:
+      haproxy:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
   # --- FIN DE NUEVOS SERVICIOS ---
 
 volumes:
@@ -212,6 +240,9 @@ volumes:
   galera2-data:
   galera3-data:
   grafana-data:
+  mantis_config:      # ← Nueva: Configuración de MantisBT
+  mantis_custom:      # ← Nueva: Personalizaciones
+  mantis_uploads:     # ← Nueva: Archivos adjuntos
 
 networks:
   redCluster:

@@ -20,4 +20,13 @@ FLUSH PRIVILEGES;
 CREATE DATABASE IF NOT EXISTS `apunju_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER IF NOT EXISTS 'apunju_user'@'%' IDENTIFIED BY 'apunju_password';
 GRANT ALL PRIVILEGES ON `apunju_db`.* TO 'apunju_user'@'%';
+
+REATE USER IF NOT EXISTS 'mantisbt'@'%' IDENTIFIED BY 'mantisbt_password';
+CREATE DATABASE IF NOT EXISTS bugtracker CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON bugtracker.* TO 'mantisbt'@'%';
+
+-- Usuario para Prometheus Exporters
+CREATE USER IF NOT EXISTS 'exporter'@'%' IDENTIFIED BY 'exporter_password' WITH MAX_USER_CONNECTIONS 3;
+GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'exporter'@'%';
+
 FLUSH PRIVILEGES;
