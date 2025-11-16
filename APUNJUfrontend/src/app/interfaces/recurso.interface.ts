@@ -1,5 +1,5 @@
 export interface Recurso {
-  _id?: string;
+  id?: number;
   nombre: string;
   ubicacion: string;
   caracteristicas: string[];

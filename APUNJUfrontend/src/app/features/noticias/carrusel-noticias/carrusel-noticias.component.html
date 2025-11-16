@@ -28,7 +28,13 @@
       <div *ngFor="let noticia of noticias; let i = index"
            class="carousel-item"
            [class.active]="i === 0">
-        <img [src]="noticia.imagenUrl" class="d-block w-100 carousel-img" alt="{{ noticia.titulo }}">
+        <img 
+          [src]="noticia.imagenUrl" 
+          class="d-block w-100 carousel-img" 
+          [alt]="noticia.titulo"
+          [loading]="i === 0 ? 'eager' : 'lazy'"
+          [style.background]="'linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%)'"
+          onerror="this.onerror=null; this.src='assets/images/logoApunju.jpg'">
         <div class="carousel-caption d-none d-md-block news-caption"> <h5 class="news-title">{{ noticia.titulo }}</h5> <p class="news-content">{{ noticia.message | slice:0:150 }}{{ noticia.message.length > 150 ? '...' : '' }}</p>
           <a [href]="noticia.link" class="btn btn-primary" target="_blank">Leer más</a>
         </div>

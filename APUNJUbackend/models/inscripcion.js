@@ -77,14 +77,6 @@ const Inscripcion = sequelize.define('Inscripcion', {
   fechaInscripcion: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
-  },
-  ipAddress: {
-    type: DataTypes.STRING(45),
-    allowNull: true
-  },
-  userAgent: {
-    type: DataTypes.STRING(500),
-    allowNull: true
   }
 }, {
   tableName: 'inscripciones',

@@ -77,11 +77,19 @@ export class ReservaComponent implements OnInit, OnDestroy {
     this.route.queryParams.subscribe(params => {
       const recursoId = params['recursoId'];
       console.log("id: " + recursoId);
-      this._apiRecurso.getRecursoById(recursoId).subscribe(
+      
+      if (!recursoId) {
+        console.error('No se proporcionó recursoId');
+        return;
+      }
+      
+      const id = typeof recursoId === 'string' ? parseInt(recursoId, 10) : recursoId;
+      
+      this._apiRecurso.getRecursoById(id).subscribe(
         (response) => {
           console.log(response);
           this.recurso = response;
-          this.reserva.resourceId = this.recurso?._id || '';
+          this.reserva.resourceId = this.recurso?.id?.toString() || '';
           if (this.usuario?.rol === "Afiliado" && this.recurso) {
             this.precioPorDia = this.recurso.precios.afiliado;
           } else if (this.usuario?.rol === "Invitado" && this.recurso) {

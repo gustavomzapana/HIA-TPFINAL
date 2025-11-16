@@ -161,8 +161,36 @@ actividadController.subirImagen = [
 
 actividadController.getAllCursos = async (req, res) => {
     try {
-        const cursos = await Curso.obtenerTodos();
-        res.status(200).json(cursos);
+        // Si no hay parámetros de paginación, devolver todos
+        if (!req.query.page && !req.query.limit) {
+            const cursos = await Actividad.findAll({
+                where: { tipoActividad: 'Curso' },
+                order: [['createdAt', 'DESC']]
+            });
+            return res.status(200).json(cursos);
+        }
+
+        // Con paginación
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 4;
+        const offset = (page - 1) * limit;
+
+        const { count, rows: cursos } = await Actividad.findAndCountAll({
+            where: { tipoActividad: 'Curso' },
+            limit: limit,
+            offset: offset,
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.status(200).json({
+            cursos: cursos,
+            pagination: {
+                total: count,
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(count / limit)
+            }
+        });
     } catch (error) {
         console.error('Error en getAllCursos:', error);
         res.status(500).json({ message: 'Error al obtener los cursos' });
@@ -171,8 +199,26 @@ actividadController.getAllCursos = async (req, res) => {
 
 actividadController.getCursosActivos = async (req, res) => {
     try {
-        const cursos = await Curso.obtenerTodos();
-        res.status(200).json(cursos);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 4;
+        const offset = (page - 1) * limit;
+
+        const { count, rows: cursos } = await Actividad.findAndCountAll({
+            where: { tipoActividad: 'Curso', activo: true },
+            limit: limit,
+            offset: offset,
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.status(200).json({
+            cursos: cursos,
+            pagination: {
+                total: count,
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(count / limit)
+            }
+        });
     } catch (error) {
         console.error('Error en getCursosActivos:', error);
         res.status(500).json({ message: 'Error al obtener los cursos activos' });
@@ -279,8 +325,36 @@ actividadController.deleteCurso = async (req, res) => {
 
 actividadController.getAllTalleres = async (req, res) => {
     try {
-        const talleres = await Actividad.findAll({ where: { tipoActividad: 'Taller' } });
-        res.status(200).json(talleres);
+        // Si no hay parámetros de paginación, devolver todos
+        if (!req.query.page && !req.query.limit) {
+            const talleres = await Actividad.findAll({
+                where: { tipoActividad: 'Taller' },
+                order: [['createdAt', 'DESC']]
+            });
+            return res.status(200).json(talleres);
+        }
+
+        // Con paginación
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 4;
+        const offset = (page - 1) * limit;
+
+        const { count, rows: talleres } = await Actividad.findAndCountAll({
+            where: { tipoActividad: 'Taller' },
+            limit: limit,
+            offset: offset,
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.status(200).json({
+            talleres: talleres,
+            pagination: {
+                total: count,
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(count / limit)
+            }
+        });
     } catch (error) {
         console.error('Error en getAllTalleres:', error);
         res.status(500).json({ message: 'Error al obtener los talleres' });
@@ -289,8 +363,26 @@ actividadController.getAllTalleres = async (req, res) => {
 
 actividadController.getTalleresActivos = async (req, res) => {
     try {
-        const talleres = await Actividad.findAll({ where: { tipoActividad: 'Taller', activo: true } });
-        res.status(200).json(talleres);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 4;
+        const offset = (page - 1) * limit;
+
+        const { count, rows: talleres } = await Actividad.findAndCountAll({
+            where: { tipoActividad: 'Taller', activo: true },
+            limit: limit,
+            offset: offset,
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.status(200).json({
+            talleres: talleres,
+            pagination: {
+                total: count,
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(count / limit)
+            }
+        });
     } catch (error) {
         console.error('Error en getTalleresActivos:', error);
         res.status(500).json({ message: 'Error al obtener los talleres activos' });
@@ -398,8 +490,36 @@ actividadController.deleteTaller = async (req, res) => {
 
 actividadController.getAllCapacitaciones = async (req, res) => {
     try {
-        const capacitaciones = await Actividad.findAll({ where: { tipoActividad: 'Capacitacion' } });
-        res.status(200).json(capacitaciones);
+        // Si no hay parámetros de paginación, devolver todos
+        if (!req.query.page && !req.query.limit) {
+            const capacitaciones = await Actividad.findAll({
+                where: { tipoActividad: 'Capacitacion' },
+                order: [['createdAt', 'DESC']]
+            });
+            return res.status(200).json(capacitaciones);
+        }
+
+        // Con paginación
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 4;
+        const offset = (page - 1) * limit;
+
+        const { count, rows: capacitaciones } = await Actividad.findAndCountAll({
+            where: { tipoActividad: 'Capacitacion' },
+            limit: limit,
+            offset: offset,
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.status(200).json({
+            capacitaciones: capacitaciones,
+            pagination: {
+                total: count,
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(count / limit)
+            }
+        });
     } catch (error) {
         console.error('Error en getAllCapacitaciones:', error);
         res.status(500).json({ message: 'Error al obtener las capacitaciones' });
@@ -408,8 +528,26 @@ actividadController.getAllCapacitaciones = async (req, res) => {
 
 actividadController.getCapacitacionesActivas = async (req, res) => {
     try {
-        const capacitaciones = await Actividad.findAll({ where: { tipoActividad: 'Capacitacion', activo: true } });
-        res.status(200).json(capacitaciones);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 4;
+        const offset = (page - 1) * limit;
+
+        const { count, rows: capacitaciones } = await Actividad.findAndCountAll({
+            where: { tipoActividad: 'Capacitacion', activo: true },
+            limit: limit,
+            offset: offset,
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.status(200).json({
+            capacitaciones: capacitaciones,
+            pagination: {
+                total: count,
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(count / limit)
+            }
+        });
     } catch (error) {
         console.error('Error en getCapacitacionesActivas:', error);
         res.status(500).json({ message: 'Error al obtener las capacitaciones activas' });
