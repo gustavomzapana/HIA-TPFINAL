@@ -23,9 +23,9 @@ export class CarruselNoticiasComponent implements OnInit {
   }
 
   obtenerNoticiasParaCarrusel(): void {
-    this.noticiasService.obtenerTodasLasNoticias().subscribe({
-      next: (data: Noticia[]) => {
-        this.noticias = data;
+    this.noticiasService.obtenerTodasLasNoticias(1, 20).subscribe({
+      next: (response: any) => {
+        this.noticias = response.noticias || [];
         this.isLoading = false;
       },
       error: (error) => {

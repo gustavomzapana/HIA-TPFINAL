@@ -40,9 +40,9 @@ export class GestionNoticiasComponent implements OnInit {
   }
 
   obtenerNoticias(): void {
-    this.noticiasService.obtenerTodasLasNoticias().subscribe({
-      next: noticias => {
-        this.noticias = noticias;
+    this.noticiasService.obtenerTodasLasNoticias(1, 1000).subscribe({
+      next: (response: any) => {
+        this.noticias = response.noticias || [];
         this.filtrarNoticias();
       },
       error: err => console.error('Error al obtener noticias', err)
@@ -78,7 +78,7 @@ export class GestionNoticiasComponent implements OnInit {
     this.isSaving = true;
 
     const obs = this.noticiaSeleccionada
-      ? this.noticiasService.actualizarNoticia(this.noticiaSeleccionada._id!, this.formulario)
+      ? this.noticiasService.actualizarNoticia(this.noticiaSeleccionada.id!, this.formulario)
       : this.noticiasService.crearNoticia(this.formulario);
 
     obs.subscribe({
@@ -97,7 +97,7 @@ export class GestionNoticiasComponent implements OnInit {
   eliminarNoticia(noticia: Noticia): void {
     if (!confirm(`¿Seguro que deseas eliminar la noticia "${noticia.titulo}"?`)) return;
 
-    this.noticiasService.eliminarNoticia(noticia._id!).subscribe({
+    this.noticiasService.eliminarNoticia(noticia.id!).subscribe({
       next: () => this.obtenerNoticias(),
       error: err => console.error('Error al eliminar noticia', err)
     });
