@@ -138,7 +138,7 @@ services:
 
   # servicio backend para la aplicación APUNJU
   backend:
-    build: ./APUNJUbackend
+    image: gaston04gut/apunju-backend:latest
     container_name: backend
     # En producción/ejecución por compose usamos el .env específico para Docker
     env_file:
@@ -150,12 +150,13 @@ services:
     depends_on:
       - haproxy
     restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
 
   # Frontend Angular
   frontend:
-    build: 
-      context: ./APUNJUfrontend/
-      dockerfile: Dockerfile
+    image: gaston04gut/apunju-frontend:latest
     container_name: frontend
     ports:
       - "80:80"  # Puerto estándar HTTP
@@ -166,6 +167,8 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   prometheus:
     image: prom/prometheus:latest
@@ -242,11 +245,11 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 300 --cleanup backend frontend
+    command: --interval 300 --label-enable --cleanup backend frontend
     networks:
       - redCluster
     environment:
-      - WATCHTOWER_INCLUDE_STOPPED=false  
+      - WATCHTOWER_INCLUDE_STOPPED=false   
       
   # Herramientas de optimización y análisis
   optimization-tools:

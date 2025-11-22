@@ -1,4 +1,4 @@
-name: CI/CD Pipeline - Build & Push Docker Images
+name: CI/CD Pipeline APUNJU
 
 on:
   push:
@@ -10,37 +10,48 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
+      # 1) Descargar código
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up QEMU (optional for multi-arch)
+      # 2) Configurar herramientas Docker
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      # 3) Login Docker Hub
+      - name: Login DockerHub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push backend image
-        uses: docker/build-push-action@v4
+      # ------------------------------
+      #  BACKEND
+      # ------------------------------
+      - name: Build and Push BACKEND
+        uses: docker/build-push-action@v5
         with:
           context: ./APUNJUbackend
           file: ./APUNJUbackend/Dockerfile
           push: true
+          no-cache: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/apunju-backend:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/apunju-backend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/apunju-backend:release
 
-      - name: Build and push frontend image
-        uses: docker/build-push-action@v4
+      # ------------------------------
+      #  FRONTEND
+      # ------------------------------
+      - name: Build and Push FRONTEND
+        uses: docker/build-push-action@v5
         with:
           context: ./APUNJUfrontend
           file: ./APUNJUfrontend/Dockerfile
           push: true
+          no-cache: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/apunju-frontend:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/apunju-frontend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/apunju-frontend:release
