@@ -6,7 +6,6 @@ scrape_configs:
   # Prometheus se monitorea a sí mismo
   - job_name: 'prometheus'
     static_configs:
-<<<<<<< HEAD
       - targets: ['localhost:9090']
 
   # MySQL Exporter - Galera 1
@@ -32,10 +31,3 @@ scrape_configs:
         labels:
           instance: 'galera3'
           cluster: 'apunju'
-=======
-      - targets: ['mysqld_exporter_galera1:9104', 'mysqld_exporter_galera2:9104', 'mysqld_exporter_galera3:9104']
-
-  - job_name: 'node'
-    static_configs:
-      - targets: ['node-exporter:9100']
->>>>>>> ef24811aaacdeb73e9677c25caca7ebfc786a892
