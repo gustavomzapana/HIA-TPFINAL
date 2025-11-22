@@ -17,6 +17,12 @@ galera1-data/
 galera2-data/
 galera3-data/
 
+# ===== DATASET Y OPTIMIZACIÓN =====
+Docker/optimization-reports/*
+!Docker/optimization-reports/.gitkeep
+!Docker/optimization-reports/.gitignore
+APUNJUbackend/data-generator/node_modules/
+
 # ===== LOGS =====
 *.log
 npm-debug.log*

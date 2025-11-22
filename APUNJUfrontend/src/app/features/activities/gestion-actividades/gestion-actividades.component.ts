@@ -275,8 +275,17 @@ Inscriptos en "${actividad.nombreCurso}":
     }
 
     observable.subscribe({
-      next: (data) => {
-        this.actividades = data || [];
+      next: (response: any) => {
+        // Manejar respuesta paginada o directa
+        if (response.talleres) {
+          this.actividades = response.talleres || [];
+        } else if (response.cursos) {
+          this.actividades = response.cursos || [];
+        } else if (response.capacitaciones) {
+          this.actividades = response.capacitaciones || [];
+        } else {
+          this.actividades = response || [];
+        }
         this.isLoading = false;
       },
       error: (error) => {

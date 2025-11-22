@@ -15,8 +15,8 @@ export class ApiRecursoService {
   public getRecursos(): Observable<any> { 
     return this._http.get(this.url);
   }
-  public getRecursoById(id: string): Observable<any> {
-    const params = new HttpParams().set('id', id);
+  public getRecursoById(id: number): Observable<any> {
+    const params = new HttpParams().set('id', id.toString());
     return this._http.get(`${this.url}recurso`, { params });
   }
 
@@ -24,13 +24,13 @@ export class ApiRecursoService {
     return this._http.post(`${this.url}`, data);
   }
 
-  public updateRecurso(id: string, data: any): Observable<any> {
-    const params = new HttpParams().set('id', id);
+  public updateRecurso(id: number, data: any): Observable<any> {
+    const params = new HttpParams().set('id', id.toString());
     return this._http.put(`${this.url}`, data, { params });
   }
 
-  public deleteRecurso(id: string): Observable<any> {
-    const params = new HttpParams().set('id', id);
+  public deleteRecurso(id: number): Observable<any> {
+    const params = new HttpParams().set('id', id.toString());
     return this._http.delete(`${this.url}`, { params });
   }
 
