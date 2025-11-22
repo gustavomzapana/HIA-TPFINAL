@@ -341,12 +341,36 @@ services:
     depends_on:
       - galera3
   # --- FIN DE NUEVOS SERVICIOS ---
-
+  servicio-ia:
+    build: 
+      context: ./Docker/servicio-ia
+      dockerfile: Dockerfile
+    container_name: anomalias
+    environment:
+      - DB_HOST=haproxy
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=apunju_db
+      - DB_PORT=3306
+    volumes:
+      - ./reportes:/reportes
+    networks:
+      - redCluster
+    depends_on:
+      haproxy:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    # Comando para ejecutar el detector de anomalías cada 24h y no reiniciar el contenedor
+    command: ["sh", "-c", "while true; do python /app/src/detector_anomalias.py; sleep 86400; done"]
+    restart: unless-stopped
+    
 volumes:
   galera1-data:
   galera2-data:
   galera3-data:
   grafana-data:
+  reportes:
 
 networks:
   redCluster:
