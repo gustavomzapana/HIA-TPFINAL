@@ -218,21 +218,55 @@ services:
       context: ./Docker
       dockerfile: optimization.Dockerfile
     container_name: optimization-tools
-    environment:
-      - DB_HOST=haproxy
-      - DB_PORT=3306
-      - DB_NAME=apunju_db
-      - DB_USER=root
-      - DB_PASSWORD=root
     volumes:
       - ./Docker/optimization-reports:/optimization/reports
+      - ./Docker/scripts:/scripts
     networks:
       - redCluster
     depends_on:
       - haproxy
-    restart: "no"
-    profiles:
-      - optimization
+      - galera1
+      - galera2
+      - galera3
+    # Mantener activo esperando comandos
+    entrypoint: ["/bin/bash", "-c"]
+    command: 
+      - |
+        echo " Contenedor de optimización listo"
+        echo " Ejecuta: docker exec optimization-tools /scripts/run-optimizations.sh"
+        tail -f /dev/null
+    restart: unless-stopped
+
+  # Contenedor de backups automáticos
+  backup-service:
+    image: mariadb:10.5
+    container_name: backup-service
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - DB_HOST=haproxy
+      - DB_PORT=3306
+      - DB_NAME=apunju_db
+      - BACKUP_RETENTION_DAYS=7
+    volumes:
+      - ./Docker/backups:/backups
+      - ./Docker/scripts:/scripts:ro
+    networks:
+      - redCluster
+    depends_on:
+      galera1:
+        condition: service_healthy
+      galera2:
+        condition: service_healthy
+      galera3:
+        condition: service_healthy
+    command: >
+      bash -c "
+        apt-get update && apt-get install -y cron wget &&
+        chmod +x /scripts/*.sh &&
+        echo '0 2 * * * /scripts/backup.sh >> /backups/logs/cron.log 2>&1' | crontab - &&
+        cron -f
+      "
+    restart: unless-stopped
 
   # --- NUEVOS SERVICIOS AÑADIDOS ---
   mysqld_exporter_galera1:

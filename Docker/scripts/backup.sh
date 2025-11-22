@@ -1,6 +1,35 @@
 #!/bin/sh
 set -e
 
+# ============================================================================
+# SISTEMA DE BACKUPS AUTOMÁTICOS
+# ============================================================================
+# ¿Para qué sirve este script?
+# 
+# 1. PROTECCIÓN DE DATOS: Genera copias de seguridad de toda la base de datos
+#    cada 6 horas, protegiéndote contra:
+#    - Pérdida de datos por fallas de hardware
+#    - Errores humanos (borrado accidental)
+#    - Corrupción de datos
+#    - Ataques o ransomware
+#
+# 2. ALMACENAMIENTO EN LA NUBE: Sube automáticamente los backups a NextCloud
+#    (almacenamiento en la nube propio), permitiendo:
+#    - Recuperación ante desastres (si se pierde el servidor completo)
+#    - Acceso remoto a backups desde cualquier lugar
+#    - Versionado de backups (mantener múltiples versiones)
+#
+# 3. OPTIMIZACIÓN: 
+#    - Comprime los backups con gzip (reduce tamaño 70-90%)
+#    - Usa --single-transaction para backups sin bloqueos
+#    - Reintentos automáticos con backoff exponencial
+#
+# 4. USO:
+#    - Backups automáticos: Se ejecutan solos cada 6 horas
+#    - Backup manual: docker exec backup /app/backup.sh
+#    - Restaurar: docker exec backup /app/restore.sh <archivo.sql.gz>
+# ============================================================================
+
 echo "[BACKUP] 🚀 Iniciando servicio de backup con NextCloud..."
 echo "[BACKUP] Esperando a que la base de datos esté disponible..."
 
