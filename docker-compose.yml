@@ -75,7 +75,7 @@ services:
     container_name: adminer
     restart: always
     ports:
-      - 8080:8080   # Adminer disponible en http://localhost:8080
+      - 8081:8080   # Adminer disponible en http://localhost:8080
     depends_on:
       - haproxy
     networks:
@@ -199,6 +199,42 @@ services:
     depends_on:
       - prometheus
 
+#firewall
+  firewall:
+    build: 
+      context: ./Docker/scripts/firewall
+      dockerfile: Dockerfile
+    container_name: apunju-firewall
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    networks:
+      - redCluster
+    depends_on:
+      - backend
+      - frontend
+#exportador de metricas del iptables
+  node-exporter:
+    build: 
+      context: .
+      dockerfile: ./Docker/scripts/node-exporter/Dockerfile
+    container_name: node-exporter
+    volumes:
+      - /var/lib/node-exporter:/var/lib/node-exporter
+    ports:
+      - "9100:9100"
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    networks:
+      - redCluster 
+    depends_on:
+      - backend
+      - frontend
+      - haproxy
+      - prometheus
+      - grafana 
+    
   # --- WATCHLOVER ---    
   watchlover:
     image: containrrr/watchtower:latest
@@ -237,7 +273,7 @@ services:
   # --- NUEVOS SERVICIOS AÑADIDOS ---
   mysqld_exporter_galera1:
     image: prom/mysqld-exporter
-    container_name: mysqld_exporter_galera1
+    container_name: exporter1
     command:
       - "--config.my-cnf=/etc/mysql/exporter.cnf"
     volumes:
@@ -249,7 +285,7 @@ services:
 
   mysqld_exporter_galera2:
     image: prom/mysqld-exporter
-    container_name: mysqld_exporter_galera2
+    container_name: exporter2
     command:
       - "--config.my-cnf=/etc/mysql/exporter.cnf"
     volumes:
@@ -261,7 +297,7 @@ services:
 
   mysqld_exporter_galera3:
     image: prom/mysqld-exporter
-    container_name: mysqld_exporter_galera3
+    container_name: exporter3
     command:
       - "--config.my-cnf=/etc/mysql/exporter.cnf"
     volumes:
