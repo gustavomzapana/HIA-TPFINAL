@@ -2,21 +2,21 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Instalar dependencias del sistema (incluyendo mysql-client)
-RUN apk add --no-cache bash curl mysql-client
+# Instalar mysql-client y bash (necesarios para wait-for-db.sh)
+RUN apk add --no-cache mysql-client bash dos2unix
 
-# Copiar archivos de dependencias
+# Copiar package.json primero (para cache de npm install)
 COPY package*.json ./
+RUN npm install
 
-# Instalar dependencias
-RUN npm install --production
+# Copiar TODO el contenido
+COPY . .
 
-# Copiar el script generador
-COPY generator.js ./
+# Convertir line endings y dar permisos de ejecución
+RUN dos2unix wait-for-db.sh && \
+    chmod +x wait-for-db.sh
 
-# Script de espera para la base de datos
-COPY wait-for-db.sh ./
-RUN chmod +x wait-for-db.sh
+# Verificar que el archivo existe
+RUN ls -la wait-for-db.sh
 
-# Aumentar heap size de Node.js a 4GB
-CMD ["./wait-for-db.sh", "node", "--max-old-space-size=4096", "generator.js"]
+CMD ["./wait-for-db.sh", "node", "generator.js"]
