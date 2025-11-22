@@ -1,7 +1,33 @@
 global:
   scrape_interval: 15s
+  evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'galera_cluster'
+  # Prometheus se monitorea a sí mismo
+  - job_name: 'prometheus'
     static_configs:
-      - targets: ['mysqld_exporter_galera1:9104', 'mysqld_exporter_galera2:9104', 'mysqld_exporter_galera3:9104']
+      - targets: ['localhost:9090']
+
+  # MySQL Exporter - Galera 1
+  - job_name: 'mysqld_exporter_galera1'
+    static_configs:
+      - targets: ['mysqld_exporter_galera1:9104']
+        labels:
+          instance: 'galera1'
+          cluster: 'apunju'
+
+  # MySQL Exporter - Galera 2
+  - job_name: 'mysqld_exporter_galera2'
+    static_configs:
+      - targets: ['mysqld_exporter_galera2:9104']
+        labels:
+          instance: 'galera2'
+          cluster: 'apunju'
+
+  # MySQL Exporter - Galera 3
+  - job_name: 'mysqld_exporter_galera3'
+    static_configs:
+      - targets: ['mysqld_exporter_galera3:9104']
+        labels:
+          instance: 'galera3'
+          cluster: 'apunju'

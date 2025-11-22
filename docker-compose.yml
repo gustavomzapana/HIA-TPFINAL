@@ -75,7 +75,7 @@ services:
     container_name: adminer
     restart: always
     ports:
-      - 8080:8080   # Adminer disponible en http://localhost:8080
+      - 8081:8080   # Adminer disponible en http://localhost:8080
     depends_on:
       - haproxy
     networks:
@@ -138,7 +138,7 @@ services:
 
   # servicio backend para la aplicación APUNJU
   backend:
-    build: ./APUNJUbackend
+    image: gaston04gut/apunju-backend:release
     container_name: backend
     # En producción/ejecución por compose usamos el .env específico para Docker
     env_file:
@@ -150,12 +150,13 @@ services:
     depends_on:
       - haproxy
     restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
 
   # Frontend Angular
   frontend:
-    build: 
-      context: ./APUNJUfrontend/
-      dockerfile: Dockerfile
+    image: gaston04gut/apunju-frontend:release
     container_name: frontend
     ports:
       - "80:80"  # Puerto estándar HTTP
@@ -166,6 +167,8 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   prometheus:
     image: prom/prometheus:latest
@@ -199,32 +202,115 @@ services:
     depends_on:
       - prometheus
 
+#firewall
+  firewall:
+    build: 
+      context: ./Docker/scripts/firewall
+      dockerfile: Dockerfile
+    container_name: apunju-firewall
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    networks:
+      - redCluster
+    depends_on:
+      - backend
+      - frontend
+#exportador de metricas del iptables
+  node-exporter:
+    build: 
+      context: .
+      dockerfile: ./Docker/scripts/node-exporter/Dockerfile
+    container_name: node-exporter
+    volumes:
+      - /var/lib/node-exporter:/var/lib/node-exporter
+    ports:
+      - "9100:9100"
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    networks:
+      - redCluster 
+    depends_on:
+      - backend
+      - frontend
+      - haproxy
+      - prometheus
+      - grafana 
+    
+  # --- WATCHLOVER ---    
+  watchlover:
+    image: containrrr/watchtower:latest
+    container_name: watchlover
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300 --label-enable --cleanup backend frontend
+    networks:
+      - redCluster
+    environment:
+      - WATCHTOWER_INCLUDE_STOPPED=false   
+      
   # Herramientas de optimización y análisis
   optimization-tools:
     build:
       context: ./Docker
       dockerfile: optimization.Dockerfile
     container_name: optimization-tools
-    environment:
-      - DB_HOST=haproxy
-      - DB_PORT=3306
-      - DB_NAME=apunju_db
-      - DB_USER=root
-      - DB_PASSWORD=root
     volumes:
       - ./Docker/optimization-reports:/optimization/reports
+      - ./Docker/scripts:/scripts
     networks:
       - redCluster
     depends_on:
       - haproxy
-    restart: "no"
-    profiles:
-      - optimization
+      - galera1
+      - galera2
+      - galera3
+    # Mantener activo esperando comandos
+    entrypoint: ["/bin/bash", "-c"]
+    command: 
+      - |
+        echo " Contenedor de optimización listo"
+        echo " Ejecuta: docker exec optimization-tools /scripts/run-optimizations.sh"
+        tail -f /dev/null
+    restart: unless-stopped
+
+  # Contenedor de backups automáticos
+  backup-service:
+    image: mariadb:10.5
+    container_name: backup-service
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - DB_HOST=haproxy
+      - DB_PORT=3306
+      - DB_NAME=apunju_db
+      - BACKUP_RETENTION_DAYS=7
+    volumes:
+      - ./Docker/backups:/backups
+      - ./Docker/scripts:/scripts:ro
+    networks:
+      - redCluster
+    depends_on:
+      galera1:
+        condition: service_healthy
+      galera2:
+        condition: service_healthy
+      galera3:
+        condition: service_healthy
+    command: >
+      bash -c "
+        apt-get update && apt-get install -y cron wget &&
+        chmod +x /scripts/*.sh &&
+        echo '0 2 * * * /scripts/backup.sh >> /backups/logs/cron.log 2>&1' | crontab - &&
+        cron -f
+      "
+    restart: unless-stopped
 
   # --- NUEVOS SERVICIOS AÑADIDOS ---
   mysqld_exporter_galera1:
     image: prom/mysqld-exporter
-    container_name: mysqld_exporter_galera1
+    container_name: exporter1
     command:
       - "--config.my-cnf=/etc/mysql/exporter.cnf"
     volumes:
@@ -236,7 +322,7 @@ services:
 
   mysqld_exporter_galera2:
     image: prom/mysqld-exporter
-    container_name: mysqld_exporter_galera2
+    container_name: exporter2
     command:
       - "--config.my-cnf=/etc/mysql/exporter.cnf"
     volumes:
@@ -248,7 +334,7 @@ services:
 
   mysqld_exporter_galera3:
     image: prom/mysqld-exporter
-    container_name: mysqld_exporter_galera3
+    container_name: exporter3
     command:
       - "--config.my-cnf=/etc/mysql/exporter.cnf"
     volumes:
@@ -286,15 +372,42 @@ services:
       timeout: 10s
       retries: 3
   # --- FIN DE NUEVOS SERVICIOS ---
-
+  servicio-ia:
+    build: 
+      context: ./Docker/servicio-ia
+      dockerfile: Dockerfile
+    container_name: anomalias
+    environment:
+      - DB_HOST=haproxy
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=apunju_db
+      - DB_PORT=3306
+    volumes:
+      - ./reportes:/reportes
+    networks:
+      - redCluster
+    depends_on:
+      haproxy:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    # Comando para ejecutar el detector de anomalías cada 24h y no reiniciar el contenedor
+    command: ["sh", "-c", "while true; do python /app/src/detector_anomalias.py; sleep 86400; done"]
+    restart: unless-stopped
+    
 volumes:
   galera1-data:
   galera2-data:
   galera3-data:
   grafana-data:
+<<<<<<< HEAD
   mantis_config:      # ← Nueva: Configuración de MantisBT
   mantis_custom:      # ← Nueva: Personalizaciones
   mantis_uploads:     # ← Nueva: Archivos adjuntos
+=======
+  reportes:
+>>>>>>> fce05e11fdc0af6c2d1a344a106387ea452770d2
 
 networks:
   redCluster:
