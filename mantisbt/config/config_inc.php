@@ -54,8 +54,8 @@ $g_max_file_size = 10485760;  # 10MB
 $g_allowed_files = 'png,gif,jpg,jpeg,pdf,txt,doc,docx,xls,xlsx,ppt,pptx,zip,rar,sql,log,json,xml,csv';
 
 # ===== URL DEL SITIO =====
-$g_path = 'http://localhost:8989/';
-$g_short_path = '/';
+$g_path = 'https://jesenia-grapier-techily.ngrok-free.dev/';
+$g_short_path = 'https://jesenia-grapier-techily.ngrok-free.dev/';
 
 # ===== PERMISOS Y CARACTERÍSTICAS =====
 $g_enable_project_documentation = ON;

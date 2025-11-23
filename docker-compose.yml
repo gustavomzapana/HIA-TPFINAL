@@ -377,6 +377,20 @@ services:
       - haproxy-web
     ports:
       - "4040:4040"
+      
+  ngrok-mantis:
+    image: ngrok/ngrok:latest
+    container_name: ngrok-mantis
+    restart: unless-stopped
+    command: http mantisbt:80
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN_DB}
+    ports:
+      - "4043:4040"
+    depends_on:
+      - mantisbt
+    networks:
+      - redCluster
   # Mantis Bug Tracker
   mantisbt:
     image: xlrl/mantisbt:latest
