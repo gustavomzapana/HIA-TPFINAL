@@ -154,10 +154,7 @@ services:
 
   # servicio backend para la aplicación APUNJU
   backend:
-    #image: gaston04gut/apunju-backend:release
-    build: 
-      context: ./APUNJUbackend
-      dockerfile: Dockerfile
+    image: gaston04gut/apunju-backend:release
     container_name: backend
     # En producción/ejecución por compose usamos el .env específico para Docker
     env_file:
