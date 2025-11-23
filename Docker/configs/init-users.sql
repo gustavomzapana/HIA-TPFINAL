@@ -21,7 +21,7 @@ CREATE DATABASE IF NOT EXISTS `apunju_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_
 CREATE USER IF NOT EXISTS 'apunju_user'@'%' IDENTIFIED BY 'apunju_password';
 GRANT ALL PRIVILEGES ON `apunju_db`.* TO 'apunju_user'@'%';
 
-REATE USER IF NOT EXISTS 'mantisbt'@'%' IDENTIFIED BY 'mantisbt_password';
+CREATE USER IF NOT EXISTS 'mantisbt'@'%' IDENTIFIED BY 'mantisbt_password';
 CREATE DATABASE IF NOT EXISTS bugtracker CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 GRANT ALL PRIVILEGES ON bugtracker.* TO 'mantisbt'@'%';
 

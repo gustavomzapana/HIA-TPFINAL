@@ -358,6 +358,7 @@ services:
     volumes:
       # Persistencia de configuración personalizada
       - mantis_config:/var/www/html/config
+      - ./mantisbt/config/config_inc.php:/var/www/html/config/config_inc.php
       # Persistencia de personalizaciones (logos, CSS, etc.)
       - mantis_custom:/var/www/html/custom
       # Persistencia de archivos adjuntos
@@ -401,13 +402,9 @@ volumes:
   galera2-data:
   galera3-data:
   grafana-data:
-<<<<<<< HEAD
   mantis_config:      # ← Nueva: Configuración de MantisBT
   mantis_custom:      # ← Nueva: Personalizaciones
   mantis_uploads:     # ← Nueva: Archivos adjuntos
-=======
-  reportes:
->>>>>>> fce05e11fdc0af6c2d1a344a106387ea452770d2
 
 networks:
   redCluster:
