@@ -106,6 +106,22 @@ services:
       retries: 3
       start_period: 10s
 
+  # HAProxy para HTTP - Proxy inverso (frontend + backend bajo misma URL)
+  haproxy-web:
+    image: haproxy:2.9
+    container_name: haproxy-web
+    restart: unless-stopped
+    volumes:
+      - ./Docker/configs/haproxy-web.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "80:8080"     # Puerto principal para acceso local
+      - "8888:8080"   # Puerto alternativo
+    networks:
+      - redCluster
+    depends_on:
+      - frontend
+      - backend
+
   # Generador de datos masivos
   data-generator:
     build: ./APUNJUbackend/data-generator
@@ -158,10 +174,7 @@ services:
   frontend:
     image: gaston04gut/apunju-frontend:release
     container_name: frontend
-    ports:
-      - "80:80"  # Puerto estándar HTTP
-    environment:
-      - API_URL=http://localhost:8000
+    # Puerto 80 interno (no expuesto, solo accesible via HAProxy)
     networks:
       - redCluster
     depends_on:
@@ -196,6 +209,8 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/grafana/
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     volumes:
       - grafana-data:/var/lib/grafana
     restart: unless-stopped
@@ -344,6 +359,24 @@ services:
     depends_on:
       - galera3
 
+# === TUNEL PUBLICO - FRONTEND + BACKEND (MISMO DOMINIO) ===
+  
+  # Túnel único via HAProxy (evita CORS)
+  ngrok-gateway:
+    image: ngrok/ngrok:latest
+    container_name: ngrok-gateway
+    restart: unless-stopped
+    command:
+      - "http"
+      - "haproxy-web:8080"
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    networks:
+      - redCluster
+    depends_on:
+      - haproxy-web
+    ports:
+      - "4040:4040"
   # Mantis Bug Tracker
   mantisbt:
     image: xlrl/mantisbt:latest
