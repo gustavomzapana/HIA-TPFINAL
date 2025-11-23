@@ -154,7 +154,7 @@ services:
 
   # servicio backend para la aplicación APUNJU
   backend:
-    build: ./APUNJUbackend
+    image: gaston04gut/apunju-backend:release
     container_name: backend
     # En producción/ejecución por compose usamos el .env específico para Docker
     env_file:
@@ -166,12 +166,13 @@ services:
     depends_on:
       - haproxy
     restart: always
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
 
   # Frontend Angular
   frontend:
-    build: 
-      context: ./APUNJUfrontend/
-      dockerfile: Dockerfile
+    image: gaston04gut/apunju-frontend:release
     container_name: frontend
     # Puerto 80 interno (no expuesto, solo accesible via HAProxy)
     networks:
@@ -179,6 +180,8 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   prometheus:
     image: prom/prometheus:latest
@@ -257,11 +260,11 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 300 --cleanup backend frontend
+    command: --interval 300 --label-enable --cleanup backend frontend
     networks:
       - redCluster
     environment:
-      - WATCHTOWER_INCLUDE_STOPPED=false  
+      - WATCHTOWER_INCLUDE_STOPPED=false   
       
   # Herramientas de optimización y análisis
   optimization-tools:
@@ -269,21 +272,55 @@ services:
       context: ./Docker
       dockerfile: optimization.Dockerfile
     container_name: optimization-tools
-    environment:
-      - DB_HOST=haproxy
-      - DB_PORT=3306
-      - DB_NAME=apunju_db
-      - DB_USER=root
-      - DB_PASSWORD=root
     volumes:
       - ./Docker/optimization-reports:/optimization/reports
+      - ./Docker/scripts:/scripts
     networks:
       - redCluster
     depends_on:
       - haproxy
-    restart: "no"
-    profiles:
-      - optimization
+      - galera1
+      - galera2
+      - galera3
+    # Mantener activo esperando comandos
+    entrypoint: ["/bin/bash", "-c"]
+    command: 
+      - |
+        echo " Contenedor de optimización listo"
+        echo " Ejecuta: docker exec optimization-tools /scripts/run-optimizations.sh"
+        tail -f /dev/null
+    restart: unless-stopped
+
+  # Contenedor de backups automáticos
+  backup-service:
+    image: mariadb:10.5
+    container_name: backup-service
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - DB_HOST=haproxy
+      - DB_PORT=3306
+      - DB_NAME=apunju_db
+      - BACKUP_RETENTION_DAYS=7
+    volumes:
+      - ./Docker/backups:/backups
+      - ./Docker/scripts:/scripts:ro
+    networks:
+      - redCluster
+    depends_on:
+      galera1:
+        condition: service_healthy
+      galera2:
+        condition: service_healthy
+      galera3:
+        condition: service_healthy
+    command: >
+      bash -c "
+        apt-get update && apt-get install -y cron wget &&
+        chmod +x /scripts/*.sh &&
+        echo '0 2 * * * /scripts/backup.sh >> /backups/logs/cron.log 2>&1' | crontab - &&
+        cron -f
+      "
+    restart: unless-stopped
 
   # --- NUEVOS SERVICIOS AÑADIDOS ---
   mysqld_exporter_galera1:
@@ -321,8 +358,8 @@ services:
       - redCluster
     depends_on:
       - galera3
-  # --- FIN DE NUEVOS SERVICIOS ---
 
+<<<<<<< HEAD
 # === TUNEL PUBLICO - FRONTEND + BACKEND (MISMO DOMINIO) ===
   
   # Túnel único via HAProxy (evita CORS)
@@ -341,11 +378,69 @@ services:
       - haproxy-web
     ports:
       - "4040:4040"
+=======
+  # Mantis Bug Tracker
+  mantisbt:
+    image: xlrl/mantisbt:latest
+    environment:
+    # Configuracion Basica
+      MANTIS_TIMEZONE: "America/Argentina/Jujuy"
+      MANTIS_ENABLE_ADMIN: 1
+    ports:
+    - "8989:80"
+    networks:
+      - redCluster
+    volumes:
+      # Persistencia de configuración personalizada
+      - mantis_config:/var/www/html/config
+      - ./mantisbt/config/config_inc.php:/var/www/html/config/config_inc.php
+      # Persistencia de personalizaciones (logos, CSS, etc.)
+      - mantis_custom:/var/www/html/custom
+      # Persistencia de archivos adjuntos
+      - mantis_uploads:/var/www/html/mantisbt/uploads
+    depends_on:
+      haproxy:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  # --- FIN DE NUEVOS SERVICIOS ---
+  servicio-ia:
+    build: 
+      context: ./Docker/servicio-ia
+      dockerfile: Dockerfile
+    container_name: anomalias
+    environment:
+      - DB_HOST=haproxy
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=apunju_db
+      - DB_PORT=3306
+    volumes:
+      - ./reportes:/reportes
+    networks:
+      - redCluster
+    depends_on:
+      haproxy:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    # Comando para ejecutar el detector de anomalías cada 24h y no reiniciar el contenedor
+    command: ["sh", "-c", "while true; do python /app/src/detector_anomalias.py; sleep 86400; done"]
+    restart: unless-stopped
+    
+>>>>>>> a17935e74b031916ad3859211ab196929e4a3e4a
 volumes:
   galera1-data:
   galera2-data:
   galera3-data:
   grafana-data:
+  mantis_config:      # ← Nueva: Configuración de MantisBT
+  mantis_custom:      # ← Nueva: Personalizaciones
+  mantis_uploads:     # ← Nueva: Archivos adjuntos
 
 networks:
   redCluster:

@@ -1,14 +1,14 @@
 FROM alpine:3.18
 
-# Instalar dependencias mínimas
+# Instalar dependencias
 RUN apk add --no-cache iptables iproute2 bash
 
-# Crear directorio para el script
+# Crear directorio para los scripts
 RUN mkdir -p /firewall
 
-# Copiar script
-COPY start.sh /firewall/
-RUN chmod +x /firewall/start.sh
+# Copiar scripts
+COPY *.sh /firewall/
+RUN chmod +x /firewall/*.sh
 
 # Comando de inicio
-CMD ["/firewall/start.sh"]
+CMD ["/firewall/startup.sh"]

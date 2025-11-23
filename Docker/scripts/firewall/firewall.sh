@@ -1,6 +1,4 @@
 #!/bin/bash
-set -e
-
 echo "🔧 Configurando reglas básicas del firewall..."
 
 # Limpiar reglas existentes
@@ -36,7 +34,4 @@ iptables -A INPUT -p icmp --icmp-type echo-request -m limit --limit 1/s -j ACCEP
 # Registrar intentos de conexión rechazados
 iptables -A INPUT -m limit --limit 1/min -j LOG --log-prefix "Firewall-Dropped: " --log-level 4
 
-echo "✅ Firewall configurado correctamente"
-
-# Mantener el contenedor en ejecución
-tail -f /dev/null
+echo "✅ Firewall básico configurado"
