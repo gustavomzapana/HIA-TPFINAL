@@ -11,6 +11,7 @@ const transporter = nodemailer.createTransport({
 });
 
 async function enviarCorreo(type, data) {
+    /*
     const strategy = emailFactory(type, data); // Patron de Diseño Factory para crear la estrategia de envío de correo
     const emailOptions = strategy.getEmailOptions(); // Obtiene las opciones de correo según la estrategia seleccionada
     try {
@@ -20,5 +21,7 @@ async function enviarCorreo(type, data) {
         console.error('Error al enviar el correo:', error);
         throw new Error('No se pudo enviar el correo electrónico');
     }
+        */
 }
+    
 module.exports = { enviarCorreo };

@@ -53,7 +53,7 @@ const userService = {
       nombre: userData.nombre,
       email: userData.email,
     };
-    await enviarCorreo("creacionCuenta", datos);
+   // await enviarCorreo("creacionCuenta", datos);
     return await userRepository.createUser(userData);
   },
   getUsers: async () => {
