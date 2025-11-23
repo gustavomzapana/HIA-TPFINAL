@@ -41,15 +41,69 @@ done
 
 echo "[BACKUP] ✅ Base de datos lista. Iniciando backups automáticos cada 6 horas..."
 
-# Loop infinito para backups cada 6 horas
-while true; do
+upload_reports() {
+    echo "[REPORTES] 📊 Verificando reportes para subir..."
+    
+    if [ ! -d "/reportes" ] || [ -z "$(ls -A /reportes 2>/dev/null)" ]; then
+        echo "[REPORTES] ℹ️  No hay reportes para subir"
+        return
+    fi
+    
+    for REPORT_FILE in /reportes/*.json; do
+        if [ -f "$REPORT_FILE" ]; then
+            FILENAME=$(basename "$REPORT_FILE")
+            echo "[REPORTES] 📤 Subiendo: $FILENAME"
+            
+            RESPONSE=$(curl -s -w "\n%{http_code}" \
+                --connect-timeout 30 \
+                --max-time 120 \
+                -H "User-Agent: APUNJU-Backup/1.0" \
+                -u "$NEXTCLOUD_USER:$NEXTCLOUD_PASS" \
+                -T "$REPORT_FILE" \
+                "$NEXTCLOUD_URL/reportes/$FILENAME" 2>&1)
+            
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+            
+            if [ "$HTTP_CODE" -eq 201 ] || [ "$HTTP_CODE" -eq 204 ]; then
+                echo "[REPORTES] ✅ $FILENAME subido exitosamente (HTTP $HTTP_CODE)"
+            else
+                echo "[REPORTES] ⚠️  Error al subir $FILENAME (HTTP $HTTP_CODE)"
+            fi
+        fi
+    done
+    for REPORT_FILE in /reportes/*.png; do
+        if [ -f "$REPORT_FILE" ]; then
+            FILENAME=$(basename "$REPORT_FILE")
+            echo "[REPORTES] 📤 Subiendo: $FILENAME"
+            
+            RESPONSE=$(curl -s -w "\n%{http_code}" \
+                --connect-timeout 30 \
+                --max-time 120 \
+                -H "User-Agent: APUNJU-Backup/1.0" \
+                -u "$NEXTCLOUD_USER:$NEXTCLOUD_PASS" \
+                -T "$REPORT_FILE" \
+                "$NEXTCLOUD_URL/reportes/$FILENAME" 2>&1)
+            
+            HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+            
+            if [ "$HTTP_CODE" -eq 201 ] || [ "$HTTP_CODE" -eq 204 ]; then
+                echo "[REPORTES] ✅ $FILENAME subido exitosamente (HTTP $HTTP_CODE)"
+            else
+                echo "[REPORTES] ⚠️  Error al subir $FILENAME (HTTP $HTTP_CODE)"
+            fi
+        fi
+    done
+}
+
+
+
+backup_database() {
     TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
     FILE="/tmp/db-backup-$TIMESTAMP.sql"
     FILE_GZ="/tmp/db-backup-$TIMESTAMP.sql.gz"
-    
+
     echo "[BACKUP] 📦 Generando dump: $FILE"
     
-    # Generar dump
     mariadb-dump \
         -h haproxy \
         -P 3306 \
@@ -65,7 +119,6 @@ while true; do
     if [ $? -eq 0 ]; then
         echo "[BACKUP] ✅ Dump generado exitosamente"
         
-        # Comprimir
         echo "[BACKUP] 🗜️  Comprimiendo: $FILE_GZ"
         gzip "$FILE"
         
@@ -73,29 +126,23 @@ while true; do
             FILE_SIZE=$(du -h "$FILE_GZ" | cut -f1)
             echo "[BACKUP] ✅ Archivo comprimido ($FILE_SIZE)"
             
-            # Subir a NextCloud con reintentos
             MAX_RETRIES=3
             RETRY_DELAY=60
             SUCCESS=0
             
             for i in $(seq 1 $MAX_RETRIES); do
                 echo "[BACKUP] ☁️  Intento $i/$MAX_RETRIES: Subiendo a NextCloud..."
-                echo "[BACKUP] URL: $NEXTCLOUD_URL/db-backup-$TIMESTAMP.sql.gz"
                 
-                # Subir con curl (con timeout de 5 minutos)
                 RESPONSE=$(curl -s -w "\n%{http_code}" \
                     --connect-timeout 30 \
                     --max-time 300 \
                     -H "User-Agent: APUNJU-Backup/1.0" \
                     -u "$NEXTCLOUD_USER:$NEXTCLOUD_PASS" \
                     -T "$FILE_GZ" \
-                    "$NEXTCLOUD_URL/db-backup-$TIMESTAMP.sql.gz" 2>&1)
+                    "$NEXTCLOUD_URL/backups/db-backup-$TIMESTAMP.sql.gz" 2>&1)
                 
                 CURL_EXIT_CODE=$?
                 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
-                
-                echo "[BACKUP] Respuesta: $RESPONSE"
-                echo "[BACKUP] Código de salida curl: $CURL_EXIT_CODE"
                 
                 if [ $CURL_EXIT_CODE -eq 0 ] && ([ "$HTTP_CODE" -eq 201 ] || [ "$HTTP_CODE" -eq 204 ]); then
                     echo "[BACKUP] ✅ Backup subido exitosamente a NextCloud (HTTP $HTTP_CODE)"
@@ -106,7 +153,7 @@ while true; do
                     
                     if [ $i -lt $MAX_RETRIES ]; then
                         sleep $RETRY_DELAY
-                        RETRY_DELAY=$((RETRY_DELAY * 2))  # Backoff exponencial
+                        RETRY_DELAY=$((RETRY_DELAY * 2))
                     fi
                 fi
             done
@@ -118,14 +165,38 @@ while true; do
                 echo "[BACKUP] ❌ No se pudo subir después de $MAX_RETRIES intentos"
                 echo "[BACKUP] 💾 Archivo guardado en: $FILE_GZ"
             fi
-        else
-            echo "[BACKUP] ❌ Error al comprimir el archivo"
         fi
     else
         echo "[BACKUP] ❌ Error al generar el dump"
     fi
-    
-    echo "[BACKUP] ⏰ Próximo backup en 6 horas..."
+}
+
+# ============================================================================
+# LOOP PRINCIPAL
+# ============================================================================
+echo "[BACKUP] 🚀 Iniciando loop de backups automáticos..."
+
+# Contador de horas para backups de BD
+HOUR_COUNT=0
+
+# Ejecutar backup inicial inmediatamente
+upload_reports
+backup_database
+
+# Loop infinito para backups periódicos
+while true; do
+    echo "[BACKUP] ⏰ Próximo ciclo en 1 hora (reportes) / 6 horas (backup BD)..."
     echo "[BACKUP] ===================="
-    sleep 21600  # 6 horas
+    
+    # Esperar 1 hora
+    sleep 3600
+    
+    # Subir reportes cada hora
+    upload_reports
+    
+    # Cada 6 iteraciones (6 horas), hacer backup de BD
+    HOUR_COUNT=$((HOUR_COUNT + 1))
+    if [ $((HOUR_COUNT % 6)) -eq 0 ]; then
+        backup_database
+    fi
 done
