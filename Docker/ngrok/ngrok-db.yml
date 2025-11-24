@@ -1,7 +1,0 @@
-version: "2"
-authtoken: 35rJPFa5Rf0EvPdJM36rMrNTuz1_794HQFGscqKd8E7ZbueWn
-
-tunnels:
-  database:
-    proto: tcp
-    addr: haproxy:3306
