@@ -5,4 +5,5 @@ tunnels:
   public_app:
     proto: http
     addr: haproxy-web:8080
+    domain: https://bella-nonabstaining-bewilderedly.ngrok-free.dev
     inspect: true
