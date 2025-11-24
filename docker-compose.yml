@@ -381,6 +381,7 @@ services:
   # Mantis Bug Tracker
   mantisbt:
     image: xlrl/mantisbt:latest
+    container_name: mantisbt
     environment:
     # Configuracion Basica
       MANTIS_TIMEZONE: "America/Argentina/Jujuy"
