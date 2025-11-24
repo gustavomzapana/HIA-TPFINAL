@@ -156,9 +156,10 @@ services:
 
   # Frontend Angular
   frontend:
-    image: gaston04gut/apunju-frontend:release
-    container_name: frontend
-    # Puerto 80 interno (no expuesto, solo accesible via HAProxy)
+    #image: gaston04gut/apunju-frontend:release
+    build:
+      context: ./APUNJUfrontend
+        # Puerto 80 interno (no expuesto, solo accesible via HAProxy)
     networks:
       - redCluster
     depends_on:
