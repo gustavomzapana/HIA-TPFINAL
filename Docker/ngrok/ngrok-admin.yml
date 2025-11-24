@@ -1,0 +1,8 @@
+version: "2"
+authtoken: 35rJPFa5Rf0EvPdJM36rMrNTuz1_794HQFGscqKd8E7ZbueWn  # Tu segundo token
+
+tunnels:
+  admin_tools:
+    proto: http
+    addr: haproxy-admin:8085  # Usaremos otro puerto
+    inspect: true

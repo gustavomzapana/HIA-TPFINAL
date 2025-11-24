@@ -106,22 +106,6 @@ services:
       retries: 3
       start_period: 10s
 
-  # HAProxy para HTTP - Proxy inverso (frontend + backend bajo misma URL)
-  haproxy-web:
-    image: haproxy:2.9
-    container_name: haproxy-web
-    restart: unless-stopped
-    volumes:
-      - ./Docker/configs/haproxy-web.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
-    ports:
-      - "80:8080"     # Puerto principal para acceso local
-      - "8888:8080"   # Puerto alternativo
-    networks:
-      - redCluster
-    depends_on:
-      - frontend
-      - backend
-
   # Generador de datos masivos
   data-generator:
     build: ./APUNJUbackend/data-generator
@@ -291,37 +275,6 @@ services:
         tail -f /dev/null
     restart: unless-stopped
 
-  # Contenedor de backups automáticos
-  backup-service:
-    image: mariadb:10.5
-    container_name: backup-service
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - DB_HOST=haproxy
-      - DB_PORT=3306
-      - DB_NAME=apunju_db
-      - BACKUP_RETENTION_DAYS=7
-    volumes:
-      - ./Docker/backups:/backups
-      - ./Docker/scripts:/scripts:ro
-    networks:
-      - redCluster
-    depends_on:
-      galera1:
-        condition: service_healthy
-      galera2:
-        condition: service_healthy
-      galera3:
-        condition: service_healthy
-    command: >
-      bash -c "
-        apt-get update && apt-get install -y cron wget &&
-        chmod +x /scripts/*.sh &&
-        echo '0 2 * * * /scripts/backup.sh >> /backups/logs/cron.log 2>&1' | crontab - &&
-        cron -f
-      "
-    restart: unless-stopped
-
   # --- NUEVOS SERVICIOS AÑADIDOS ---
   mysqld_exporter_galera1:
     image: prom/mysqld-exporter
@@ -358,19 +311,48 @@ services:
       - redCluster
     depends_on:
       - galera3
-
-# === TUNEL PUBLICO - FRONTEND + BACKEND (MISMO DOMINIO) ===
   
-  # Túnel único via HAProxy (evita CORS)
+  # HAProxy para HTTP - Proxy inverso (frontend + backend bajo misma URL)
+  haproxy-web:
+    image: haproxy:2.8-alpine
+    container_name: haproxy-web
+    restart: unless-stopped
+    volumes:
+      - ./Docker/configs/haproxy-web.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - redCluster
+    depends_on:
+      - frontend
+      - backend
+
+  haproxy-admin:
+    image: haproxy:2.8-alpine
+    container_name: haproxy-admin
+    restart: unless-stopped
+    volumes:
+      - ./Docker/configs/haproxy-admin.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    ports:
+      - "8085:8085"
+    networks:
+      - redCluster
+    depends_on:
+      - adminer
+      - grafana
+      - prometheus
+      - mantisbt
   ngrok-gateway:
     image: ngrok/ngrok:latest
     container_name: ngrok-gateway
     restart: unless-stopped
     command:
-      - "http"
-      - "haproxy-web:8080"
-    environment:
-      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+      - "start"
+      - "public_app"
+      - "--config"
+      - "/etc/ngrok.yml"
+    volumes:
+      - ./Docker/ngrok/ngrok.yml:/etc/ngrok.yml:ro
     networks:
       - redCluster
     depends_on:
@@ -378,22 +360,28 @@ services:
     ports:
       - "4040:4040"
       
-  ngrok-mantis:
+  ngrok-admin:
     image: ngrok/ngrok:latest
-    container_name: ngrok-mantis
+    container_name: ngrok-admin
     restart: unless-stopped
-    command: http mantisbt:80
-    environment:
-      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN_DB}
-    ports:
-      - "4043:4040"
-    depends_on:
-      - mantisbt
+    command:
+      - "start"
+      - "admin_tools"
+      - "--config"
+      - "/etc/ngrok.yml"
+    volumes:
+      - ./Docker/ngrok/ngrok-admin.yml:/etc/ngrok.yml:ro
     networks:
       - redCluster
+    depends_on:
+      - haproxy-admin
+    ports:
+      - "4041:4040"
+
   # Mantis Bug Tracker
   mantisbt:
     image: xlrl/mantisbt:latest
+    container_name: mantisbt
     environment:
     # Configuracion Basica
       MANTIS_TIMEZONE: "America/Argentina/Jujuy"

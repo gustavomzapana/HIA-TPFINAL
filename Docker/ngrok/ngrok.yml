@@ -2,22 +2,7 @@ version: "2"
 authtoken: 35oSqeiiyi6BrKJ0uXr8wOioS2R_Cae4vGtcGbqmM27CELRw
 
 tunnels:
-  frontend:
+  public_app:
     proto: http
-    addr: frontend:80
-    inspect: true
-    
-  backend:
-    proto: http
-    addr: backend:8000
-    inspect: true
-    
-  grafana:
-    proto: http
-    addr: grafana:3000
-    inspect: true
-    
-  adminer:
-    proto: http
-    addr: adminer:8080
+    addr: haproxy-web:8080
     inspect: true
