@@ -19,6 +19,8 @@ galera3-data/
 
 # ===== DATASET Y OPTIMIZACIÓN =====
 Docker/optimization-reports/*
+Docker/ngrok/*
+Docker/configs/haproxy-admin.cfg
 !Docker/optimization-reports/.gitkeep
 !Docker/optimization-reports/.gitignore
 APUNJUbackend/data-generator/node_modules/
