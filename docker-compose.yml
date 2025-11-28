@@ -22,7 +22,7 @@ services:
       retries: 20
       start_period: 40s
 
-  # nodo dos
+  # nodo dosdocker
   galera2:
     image: mariadb:10.5
     container_name: galera2
@@ -138,9 +138,11 @@ services:
 
   # servicio backend para la aplicación APUNJU
   backend:
-    image: gaston04gut/apunju-backend:release
+    image: gustavomz/apunju-backend:release
     container_name: backend
     # En producción/ejecución por compose usamos el .env específico para Docker
+    #backend:
+    #build: ./APUNJUbackend
     env_file:
       - ./APUNJUbackend/.env.docker
     ports:
@@ -157,8 +159,10 @@ services:
   # Frontend Angular
   frontend:
     #image: gaston04gut/apunju-frontend:release
-    build:
-      context: ./APUNJUfrontend
+    image: gustavomz/apunju-frontend:release
+    container_name: frontend
+    #build:
+    #   context: ./APUNJUfrontend
         # Puerto 80 interno (no expuesto, solo accesible via HAProxy)
     networks:
       - redCluster
