@@ -206,6 +206,24 @@ services:
     depends_on:
       - prometheus
 
+  # Contenedor de pruebas para simular carga y ataques controlados (ddos-tester)
+  ddos-tester:
+    build:
+      context: ./Docker/scripts/ddos-tester
+      dockerfile: Dockerfile
+    container_name: ddos-tester
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    stdin_open: true
+    tty: true
+    networks:
+      - redCluster
+    restart: "no"
+    depends_on:
+      - backend
+      - frontend      
+
 #firewall
   firewall:
     build: 

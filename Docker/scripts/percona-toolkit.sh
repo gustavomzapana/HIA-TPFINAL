@@ -31,7 +31,7 @@ log "1. Analizando queries lentas (pt-query-digest)..."
 log "   Analizando galera1..."
 if [ -n "$SLOW_LOG_GALERA1" ] && [ "$SLOW_LOG_GALERA1" != "NULL" ]; then
     # Copiar el archivo desde el nodo remoto usando mysql
-    mysql -h galera1 -uroot -proot -e "SELECT LOAD_FILE('/var/lib/mysql/$SLOW_LOG_GALERA1')" > /tmp/galera1-slow.log 2>/dev/null || echo "No se pudo copiar el log"
+    mysql -h galera1 -uroot -proot -e "SELECT LOAD_FILE('$SLOW_LOG_GALERA1')" > /tmp/galera1-slow.log 2>/dev/null || echo "No se pudo copiar el log"
     
     if [ -s /tmp/galera1-slow.log ]; then
         pt-query-digest --limit 20 --order-by Query_time:sum /tmp/galera1-slow.log > $REPORT_DIR/pt-query-digest-galera1_$DATE.txt 2>&1
@@ -48,7 +48,7 @@ fi
 # Similar para galera2 y galera3
 log "   Analizando galera2..."
 if [ -n "$SLOW_LOG_GALERA2" ] && [ "$SLOW_LOG_GALERA2" != "NULL" ]; then
-    mysql -h galera2 -uroot -proot -e "SELECT LOAD_FILE('/var/lib/mysql/$SLOW_LOG_GALERA2')" > /tmp/galera2-slow.log 2>/dev/null || echo "No se pudo copiar el log"
+    mysql -h galera2 -uroot -proot -e "SELECT LOAD_FILE('$SLOW_LOG_GALERA2')" > /tmp/galera2-slow.log 2>/dev/null || echo "No se pudo copiar el log"
     
     if [ -s /tmp/galera2-slow.log ]; then
         pt-query-digest --limit 20 --order-by Query_time:sum /tmp/galera2-slow.log > $REPORT_DIR/pt-query-digest-galera2_$DATE.txt 2>&1
@@ -61,8 +61,9 @@ fi
 
 log "   Analizando galera3..."
 if [ -n "$SLOW_LOG_GALERA3" ] && [ "$SLOW_LOG_GALERA3" != "NULL" ]; then
-    mysql -h galera3 -uroot -proot -e "SELECT LOAD_FILE('/var/lib/mysql/$SLOW_LOG_GALERA3')" > /tmp/galera3-slow.log 2>/dev/null || echo "No se pudo copiar el log"
-    
+    #mysql -h galera3 -uroot -proot -e "SELECT LOAD_FILE('/var/lib/mysql/$SLOW_LOG_GALERA3')" > /tmp/galera3-slow.log 2>/dev/null || echo "No se pudo copiar el log"
+    mysql -h galera3 -uroot -proot -e "SELECT LOAD_FILE('$SLOW_LOG_GALERA3')" > /tmp/galera3-slow.log 2>/dev/null || echo "No se pudo copiar el log"
+
     if [ -s /tmp/galera3-slow.log ]; then
         pt-query-digest --limit 20 --order-by Query_time:sum /tmp/galera3-slow.log > $REPORT_DIR/pt-query-digest-galera3_$DATE.txt 2>&1
         log "     ✓ Análisis completado"
